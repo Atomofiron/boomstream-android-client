@@ -1,19 +1,20 @@
-package ru.atomofiron.boomstream
+package ru.atomofiron.boomstream.activities
 
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.view.Menu
 import android.view.MenuItem
+import com.arellomobile.mvp.MvpAppCompatActivity
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.fragment_main.*
+import ru.atomofiron.boomstream.R
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : MvpAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private var c: Int = 0
 
@@ -22,9 +23,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, String.format("Karr %d", c), Snackbar.LENGTH_LONG)
-                    .setAction("+1", { textView.text = (++c).toString() }).show()
+        fab.setOnClickListener {
+            fab.snack("Karr $c", "+1", { tvEmpty.text = (++c).toString() })
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -41,22 +41,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             super.onBackPressed()
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-
-
-        if (id == R.id.action_settings) {
-            return true
-        }
-
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -78,5 +62,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    fun FloatingActionButton.snack(text: String) {
+        Snackbar.make(this, text, Snackbar.LENGTH_LONG).show()
+    }
+
+    fun FloatingActionButton.snack(text: String, action: String, callback: () -> Unit) {
+        Snackbar.make(this, text, Snackbar.LENGTH_LONG).setAction(action, { callback() }).show()
     }
 }
