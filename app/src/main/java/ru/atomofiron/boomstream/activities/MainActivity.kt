@@ -1,7 +1,6 @@
 package ru.atomofiron.boomstream.activities
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -11,7 +10,6 @@ import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import ru.atomofiron.boomstream.I
 import ru.atomofiron.boomstream.R
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -40,20 +38,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-
-        if (id == R.id.nav_camera) {
-
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_settings) {
-            startActivity(Intent(this, SettingsActivity::class.java))
-        } else if (id == R.id.nav_exit) {
-            finish()
+        when (item.itemId) {
+            R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.nav_exit -> finish()
         }
 
         drawerLayout.closeDrawer(GravityCompat.START)
