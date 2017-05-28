@@ -1,12 +1,19 @@
 package ru.atomofiron.boomstream
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.util.Log
 import android.view.View
 
 class I {
     companion object {
+        val PREF_PROJECTS = "PREF_PROJECTS"
+        val PREF_SELECTED_PROJECT = "PREF_SELECTED_PROJECT"
+
         fun Log(log: String) = Log.e("atomofiron", log)
+        fun SP(co: Context) : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(co)
     }
 }
 

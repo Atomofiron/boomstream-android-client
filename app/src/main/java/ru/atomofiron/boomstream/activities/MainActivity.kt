@@ -1,18 +1,20 @@
 package ru.atomofiron.boomstream.activities
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import com.arellomobile.mvp.MvpAppCompatActivity
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import ru.atomofiron.boomstream.I
 import ru.atomofiron.boomstream.R
 
-class MainActivity : MvpAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +34,8 @@ class MainActivity : MvpAppCompatActivity(), NavigationView.OnNavigationItemSele
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
+
+            startActivity(Intent(this, ApikeyActivity::class.java))
         }
     }
 
