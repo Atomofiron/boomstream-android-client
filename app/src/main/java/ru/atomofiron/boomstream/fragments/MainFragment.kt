@@ -3,6 +3,7 @@ package ru.atomofiron.boomstream.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -17,8 +18,11 @@ import ru.atomofiron.boomstream.R
 import ru.atomofiron.boomstream.adapters.NotesAdapter
 import ru.atomofiron.boomstream.mvp.presenters.MainPresenter
 import ru.atomofiron.boomstream.mvp.views.MainView
+import ru.atomofiron.boomstream.snack
 
 class MainFragment : MvpAppCompatFragment(), MainView {
+
+    private var c: Int = 0
 
     companion object {
         const val TAG = "MainFragment"
@@ -40,6 +44,12 @@ class MainFragment : MvpAppCompatFragment(), MainView {
         val view = inflater!!.inflate(R.layout.fragment_main, container, false)
 
         etSearch = view.findViewById(R.id.etSearch) as EditText
+        val fab = view.findViewById(R.id.fab) as FloatingActionButton
+
+        fab.setOnClickListener {
+            fab.snack("Karr $c", "+1", { tvEmpty.text = (++c).toString() })
+        }
+
         RxTextView.textChanges(etSearch)
                 .map { text -> text.trim() }
                 .subscribe { text -> if (isResumed) presenter.search(text.toString()) }
