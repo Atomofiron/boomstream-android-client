@@ -2,6 +2,7 @@ package ru.atomofiron.boomstream.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
@@ -15,12 +16,13 @@ import kotlinx.android.synthetic.main.fragment_main.*
 import ru.atomofiron.boomstream.models.Node
 
 import ru.atomofiron.boomstream.R
+import ru.atomofiron.boomstream.activities.MainActivity
 import ru.atomofiron.boomstream.adapters.NotesAdapter
 import ru.atomofiron.boomstream.mvp.presenters.MainPresenter
 import ru.atomofiron.boomstream.mvp.views.MainView
 import ru.atomofiron.boomstream.snack
 
-class MainFragment : MvpAppCompatFragment(), MainView {
+class MainFragment : MvpAppCompatFragment(), MainView, MainActivity.OnBackPressedListener {
 
     private var c: Int = 0
 
@@ -54,6 +56,14 @@ class MainFragment : MvpAppCompatFragment(), MainView {
                 .map { text -> text.trim() }
                 .subscribe { text -> if (isResumed) presenter.search(text.toString()) }
 
+        (activity as MainActivity).onBackPressedListener = this
+
+        listAdapter = NotesAdapter(context.resources)
+
+        rvNotesList.layoutManager = LinearLayoutManager(context) as RecyclerView.LayoutManager
+        rvNotesList.adapter = listAdapter
+
+
         return view
     }
 
@@ -66,6 +76,11 @@ class MainFragment : MvpAppCompatFragment(), MainView {
             switchSearch()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed(): Boolean {
+        // todo up by folder
+        return false
     }
 
     // Custom //
@@ -89,10 +104,7 @@ class MainFragment : MvpAppCompatFragment(), MainView {
     // MainView implementation //
 
     override fun onNodesLoaded(nodes: List<Node>) {
-        listAdapter = NotesAdapter(nodes as ArrayList<Node>)
-
-        rvNotesList.layoutManager = LinearLayoutManager(context) as RecyclerView.LayoutManager
-        rvNotesList.adapter = listAdapter
+        listAdapter.setData(nodes as ArrayList<Node>)
 
         updateView()
     }
@@ -116,9 +128,17 @@ class MainFragment : MvpAppCompatFragment(), MainView {
         updateView()
     }
 
+    override fun onImageLoaded(image: Drawable, pos: Int) {
+        listAdapter.setImage(image, pos)
+    }
+
     override fun updateList(nodes: List<Node>) {
         listAdapter.setData(nodes as ArrayList<Node>)
 
         updateView()
+    }
+
+    override fun onFailure(message: String) {
+        fab.snack(message)
     }
 }

@@ -9,8 +9,7 @@ import android.view.View
 
 class I {
     companion object {
-        val PREF_PROJECTS = "PREF_PROJECTS"
-        val PREF_SELECTED_PROJECT = "PREF_SELECTED_PROJECT"
+        val PREF_API_KEY = "PREF_API_KEY"
 
         fun Log(log: String) = Log.e("atomofiron", log)
         fun SP(co: Context) : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(co)

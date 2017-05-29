@@ -14,6 +14,8 @@ import ru.atomofiron.boomstream.R
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    var onBackPressedListener: OnBackPressedListener? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -31,8 +33,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
-            super.onBackPressed()
+            if (onBackPressedListener?.onBackPressed() ?: false)
+                return
 
+            super.onBackPressed()
             startActivity(Intent(this, ApikeyActivity::class.java))
         }
     }
@@ -47,4 +51,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    interface OnBackPressedListener {
+        fun onBackPressed(): Boolean
+    }
 }
