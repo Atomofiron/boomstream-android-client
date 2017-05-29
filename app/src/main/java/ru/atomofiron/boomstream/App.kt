@@ -9,6 +9,7 @@ import ru.atomofiron.boomstream.models.retrofit.Api
 class App : Application() {
 
     companion object {
+        lateinit var cachePath: String
         lateinit var api: Api
             private set
 
@@ -18,6 +19,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        cachePath = baseContext.cacheDir.absolutePath
         val retrofit = Retrofit.Builder()
                 .baseUrl("https://boomstream.com/")
                 .addConverterFactory(GsonConverterFactory.create())

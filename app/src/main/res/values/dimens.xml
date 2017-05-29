@@ -5,9 +5,11 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="half_width">360dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
-    <dimen name="text_padding_micro">2dp</dimen>
-    <dimen name="text_padding_small">4dp</dimen>
-    <dimen name="text_padding_middle">8dp</dimen>
     <dimen name="item_image_height">48dp</dimen>
+
+    <dimen name="padding_micro">2dp</dimen>
+    <dimen name="padding_small">4dp</dimen>
+    <dimen name="padding_middle">8dp</dimen>
+    <dimen name="padding_large">16dp</dimen>
+    <dimen name="padding_vary_large">32dp</dimen>
 </resources>

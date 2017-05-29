@@ -2,7 +2,6 @@ package ru.atomofiron.boomstream.fragments
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
@@ -18,11 +17,11 @@ import ru.atomofiron.boomstream.models.Node
 import ru.atomofiron.boomstream.R
 import ru.atomofiron.boomstream.activities.MainActivity
 import ru.atomofiron.boomstream.adapters.NotesAdapter
-import ru.atomofiron.boomstream.mvp.presenters.MainPresenter
-import ru.atomofiron.boomstream.mvp.views.MainView
+import ru.atomofiron.boomstream.mvp.presenters.FolderPresenter
+import ru.atomofiron.boomstream.mvp.views.FolderView
 import ru.atomofiron.boomstream.snack
 
-class MainFragment : MvpAppCompatFragment(), MainView, MainActivity.OnBackPressedListener {
+class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPressedListener {
 
     private var c: Int = 0
 
@@ -32,11 +31,8 @@ class MainFragment : MvpAppCompatFragment(), MainView, MainActivity.OnBackPresse
     }
 
     @InjectPresenter
-    lateinit var presenter: MainPresenter
+    lateinit var presenter: FolderPresenter
     private lateinit var listAdapter: NotesAdapter
-
-    private lateinit var etSearch: EditText
-
 
     // Native //
 
@@ -45,8 +41,9 @@ class MainFragment : MvpAppCompatFragment(), MainView, MainActivity.OnBackPresse
 
         val view = inflater!!.inflate(R.layout.fragment_main, container, false)
 
-        etSearch = view.findViewById(R.id.etSearch) as EditText
+        val etSearch = view.findViewById(R.id.etSearch) as EditText
         val fab = view.findViewById(R.id.fab) as FloatingActionButton
+        val rvNotesList = view.findViewById(R.id.rvNotesList) as RecyclerView
 
         fab.setOnClickListener {
             fab.snack("Karr $c", "+1", { tvEmpty.text = (++c).toString() })
@@ -58,11 +55,10 @@ class MainFragment : MvpAppCompatFragment(), MainView, MainActivity.OnBackPresse
 
         (activity as MainActivity).onBackPressedListener = this
 
-        listAdapter = NotesAdapter(context.resources)
+        listAdapter = NotesAdapter(LayoutInflater.from(context), context.resources)
 
         rvNotesList.layoutManager = LinearLayoutManager(context) as RecyclerView.LayoutManager
         rvNotesList.adapter = listAdapter
-
 
         return view
     }
@@ -126,10 +122,6 @@ class MainFragment : MvpAppCompatFragment(), MainView, MainActivity.OnBackPresse
         listAdapter.add(node)
 
         updateView()
-    }
-
-    override fun onImageLoaded(image: Drawable, pos: Int) {
-        listAdapter.setImage(image, pos)
     }
 
     override fun updateList(nodes: List<Node>) {

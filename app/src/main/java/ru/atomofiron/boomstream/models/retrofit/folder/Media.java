@@ -6,9 +6,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import ru.atomofiron.boomstream.activities.MainActivity;
 import ru.atomofiron.boomstream.models.Node;
 
 public class Media extends Node {
@@ -164,6 +162,6 @@ public class Media extends Node {
 
     @Override
     public boolean equals(Object obj) {
-        return !(obj == null || !getClass().equals(obj.getClass())) && getCode().equals(((Subfolder) obj).getCode());
+        return !(obj == null || !getClass().equals(obj.getClass())) && code.equals(((Media) obj).code);
     }
 }

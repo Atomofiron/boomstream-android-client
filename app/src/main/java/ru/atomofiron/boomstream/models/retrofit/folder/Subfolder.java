@@ -1,11 +1,12 @@
 
 package ru.atomofiron.boomstream.models.retrofit.folder;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import ru.atomofiron.boomstream.models.Node;
 
@@ -27,10 +28,9 @@ public class Subfolder extends Node {
     @Expose
     private String added;
 
-    private Folder that;
-
+    @NonNull
     public String getCode() {
-        return code;
+        return code == null ? "" : code;
     }
 
     public void setCode(String code) {
@@ -76,6 +76,6 @@ public class Subfolder extends Node {
 
     @Override
     public boolean equals(Object obj) {
-        return !(obj == null || !getClass().equals(obj.getClass())) && getCode().equals(((Subfolder) obj).getCode());
+        return !(obj == null || !getClass().equals(obj.getClass())) && code.equals(((Subfolder) obj).code);
     }
 }

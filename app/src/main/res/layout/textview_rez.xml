@@ -8,5 +8,6 @@
     android:textColor="@color/resolutionColor"
     android:background="@drawable/rounded_corners"
     android:gravity="center"
-    android:padding="@dimen/text_padding_small"
+    android:padding="@dimen/padding_micro"
+    android:layout_margin="@dimen/padding_micro"
     />
