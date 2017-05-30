@@ -60,7 +60,7 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
 
         RxTextView.textChanges(etSearch)
                 .map { text -> text.trim() }
-                .filter { text -> !text.isEmpty() }
+                .filter { isResumed }
                 .subscribe { text -> search(text.toString()) }
 
         listAdapter = NotesAdapter(LayoutInflater.from(context), context.resources)
@@ -119,18 +119,6 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
 
     override fun onNodesLoaded(nodes: List<Node>) {
         listAdapter.setData(nodes as ArrayList<Node>)
-
-        updateView()
-    }
-
-    override fun onNodeDeleted(position: Int) {
-        listAdapter.remove(position)
-
-        updateView()
-    }
-
-    override fun onNodeAdded(node: Node) {
-        listAdapter.add(node)
 
         updateView()
     }
