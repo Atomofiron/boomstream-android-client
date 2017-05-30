@@ -20,19 +20,6 @@ class FolderPresenter: MvpPresenter<FolderView>() {
         FolderModel.loadNodes({ list -> onNodesLoaded(list) })
     }
 
-    fun deleteNodeByPosition(position: Int) {
-        mNodesList.removeAt(position)
-        viewState.onNodeDeleted(position)
-    }
-
-    fun search(query: String) {
-        viewState.onSearch(query)
-    }
-
-    fun onFailure(message: String) {
-        viewState.onFailure(message)
-    }
-
     fun onNodesLoaded(nodes: ArrayList<Node>) {
         mNodesList = nodes
         viewState.onNodesLoaded(mNodesList)

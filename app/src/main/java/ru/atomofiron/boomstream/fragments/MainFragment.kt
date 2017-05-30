@@ -123,7 +123,7 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
         updateView()
     }
 
-    override fun updateList(nodes: List<Node>) {
+    override fun onUpdateNodes(nodes: List<Node>) {
         listAdapter.setData(nodes as ArrayList<Node>)
 
         updateView()

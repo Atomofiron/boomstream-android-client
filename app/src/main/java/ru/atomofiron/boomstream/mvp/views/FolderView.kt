@@ -10,11 +10,7 @@ interface FolderView : MvpView {
 
     fun onNodesLoaded(nodes: List<Node>)
 
-    fun onNodeDeleted(position: Int)
-
-    fun onNodeAdded(node: Node)
-
-    fun updateList(nodes: List<Node>)
+    fun onUpdateNodes(nodes: List<Node>)
 
     fun onFailure(message: String)
 }
