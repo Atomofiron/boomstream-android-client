@@ -54,7 +54,9 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
         val etSearch = view.findViewById(R.id.etSearch) as EditText
         val fab = view.findViewById(R.id.fab) as FloatingActionButton
         val rvNotesList = view.findViewById(R.id.rvNotesList) as RecyclerView
-        (view.findViewById(R.id.swipeLayout) as SwipeRefreshLayout).setOnRefreshListener {
+        val swipeLayout = view.findViewById(R.id.swipeLayout) as SwipeRefreshLayout
+        swipeLayout.isRefreshing = true
+        swipeLayout.setOnRefreshListener {
             presenter.onReloadNodes()
         }
 
