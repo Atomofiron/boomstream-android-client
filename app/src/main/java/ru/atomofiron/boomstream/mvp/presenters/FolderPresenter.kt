@@ -17,11 +17,19 @@ class FolderPresenter: MvpPresenter<FolderView>() {
         super.onFirstViewAttach()
         I.Log("onFirstViewAttach()")
 
-        FolderModel.loadNodes({ list -> onNodesLoaded(list) })
+        FolderModel.loadNodes({ list -> onNodesLoaded(list) }, { message -> onLoadFail(message) })
     }
 
-    fun onNodesLoaded(nodes: ArrayList<Node>) {
+    private fun onNodesLoaded(nodes: ArrayList<Node>) {
         mNodesList = nodes
         viewState.onNodesLoaded(mNodesList)
+    }
+
+    fun onReloadNodes() {
+        FolderModel.loadNodes({ list -> onNodesLoaded(list) }, { message -> onLoadFail(message) })
+    }
+
+    private fun onLoadFail(message: Int) {
+        viewState.onLoadFail(message)
     }
 }

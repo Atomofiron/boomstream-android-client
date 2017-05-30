@@ -1,8 +1,6 @@
 package ru.atomofiron.boomstream.mvp.models
 
 import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import ru.atomofiron.boomstream.App
 import ru.atomofiron.boomstream.I
@@ -10,6 +8,7 @@ import ru.atomofiron.boomstream.models.Node
 import ru.atomofiron.boomstream.models.retrofit.folder.Folder
 import ru.atomofiron.boomstream.models.retrofit.folder.Media
 import android.os.AsyncTask
+import ru.atomofiron.boomstream.R
 import ru.atomofiron.boomstream.models.retrofit.folder.Subfolder
 import java.io.File
 import java.io.FileOutputStream
@@ -18,29 +17,32 @@ import java.io.InputStream
 
 object FolderModel {
 
-    fun loadNodes(folderCode: String, collback: (nodes: ArrayList<Node>) -> Unit) {
-        App.api.getFolder(App.apikey!!, "json", 1024, 0, folderCode).enqueue(object : Callback<Folder> {
-            override fun onResponse(call: Call<Folder>, response: Response<Folder>) =
-                    collback(collectNodes(response))
-
-            override fun onFailure(call: Call<Folder>, t: Throwable) {
-                I.Log("getFolder(): "+t.message)
-            }
-        })
-    }
-
-    fun loadNodes(callback: (nodes: ArrayList<Node>) -> Unit) {
-        object : AsyncTask<Int, ArrayList<Node>, Unit>() {
+    fun loadNodes(callback: (nodes: ArrayList<Node>) -> Unit, failback: (message: Int) -> Unit) {
+        object : AsyncTask<Int, ArrayList<Node>, Int>() {
             override fun onProgressUpdate(vararg values: ArrayList<Node>) {
                 super.onProgressUpdate(*values)
                 callback(values[0])
             }
-            override fun doInBackground(vararg params: Int?): Unit {
-                val list = loadChildren("")
+            override fun doInBackground(vararg params: Int?): Int {
+                val list: ArrayList<Node>
+                try {
+                    list = loadChildren("")
+                } catch (e: Exception) {
+                    return R.string.network_fail
+                }
 
                 publishProgress(list)
                 list.filter { it is Media }
                         .forEach { loadImageIfNoExists(it as Media) }
+
+                return 0
+            }
+
+            override fun onPostExecute(result: Int) {
+                super.onPostExecute(result)
+
+                if (result != 0)
+                    failback(result)
             }
         }.execute()
     }

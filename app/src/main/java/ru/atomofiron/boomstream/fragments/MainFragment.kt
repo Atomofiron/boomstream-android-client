@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -53,6 +54,9 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
         val etSearch = view.findViewById(R.id.etSearch) as EditText
         val fab = view.findViewById(R.id.fab) as FloatingActionButton
         val rvNotesList = view.findViewById(R.id.rvNotesList) as RecyclerView
+        (view.findViewById(R.id.swipeLayout) as SwipeRefreshLayout).setOnRefreshListener {
+            presenter.onReloadNodes()
+        }
 
         fab.setOnClickListener {
             fab.snack("Karr $c", "+1", { tvEmpty.text = (++c).toString() })
@@ -119,17 +123,13 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
 
     override fun onNodesLoaded(nodes: List<Node>) {
         listAdapter.setData(nodes as ArrayList<Node>)
+        swipeLayout.isRefreshing = false
 
         updateView()
     }
 
-    override fun onUpdateNodes(nodes: List<Node>) {
-        listAdapter.setData(nodes as ArrayList<Node>)
-
-        updateView()
-    }
-
-    override fun onFailure(message: String) {
-        fab.snack(message)
+    override fun onLoadFail(message: Int) {
+        swipeLayout.isRefreshing = false
+        fab.snack(getString(message))
     }
 }

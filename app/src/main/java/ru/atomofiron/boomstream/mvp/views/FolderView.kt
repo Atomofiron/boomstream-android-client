@@ -10,7 +10,5 @@ interface FolderView : MvpView {
 
     fun onNodesLoaded(nodes: List<Node>)
 
-    fun onUpdateNodes(nodes: List<Node>)
-
-    fun onFailure(message: String)
+    fun onLoadFail(message: Int)
 }
