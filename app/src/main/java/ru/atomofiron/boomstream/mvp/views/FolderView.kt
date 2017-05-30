@@ -10,8 +10,6 @@ interface FolderView : MvpView {
 
     fun onNodesLoaded(nodes: List<Node>)
 
-    fun onSearch(query: String)
-
     fun onNodeDeleted(position: Int)
 
     fun onNodeAdded(node: Node)

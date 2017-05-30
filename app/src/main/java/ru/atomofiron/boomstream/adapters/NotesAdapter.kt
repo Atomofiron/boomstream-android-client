@@ -28,9 +28,14 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     private lateinit var res: Resources
     var search: Boolean = false
     private val nodes: ArrayList<Node> = ArrayList()
+    private val dirNodes: ArrayList<Node> = ArrayList()
     private var nodesSearch: ArrayList<Node> = ArrayList()
     private lateinit var recyclerView: RecyclerView
     private val drawables = HashMap<String, Drawable>()
+    var onItemClickListener: OnItemClickListener? = null
+        set
+    //private val dirStack = ArrayList<String>()
+    private var curDir = ""
 
     constructor(inflater: LayoutInflater, resources: Resources) : this() {
         this.inflater = inflater
@@ -80,25 +85,53 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     fun setData(nodes: ArrayList<Node>) {
         this.nodes.clear()
         this.nodes.addAll(nodes)
-        notifyDataSetChanged()
-    }
-
-    fun clearData() {
-        nodes.clear()
+        updateDirNodes()
         notifyDataSetChanged()
     }
 
     fun add(node: Node) {
         nodes.add(node)
+        updateDirNodes()
         notifyDataSetChanged()
     }
 
     fun remove(position: Int) {
         nodes.removeAt(position)
+        updateDirNodes()
         notifyDataSetChanged()
     }
 
-    fun getList(): ArrayList<Node> = if (search) nodesSearch else nodes
+    fun popStack(): Boolean {
+        if (curDir == "")
+            return false
+
+        var code = "" // на случай если папка была вдруг удалена
+        nodes.filter { it is Subfolder && it.code == curDir  && code.isEmpty() }
+                .forEach { code = it.parentCode }
+        curDir = code
+        updateDirNodes()
+        notifyDataSetChanged()
+
+        return true
+    }
+
+    private fun openFolder(code: String) {
+        curDir = code
+        updateDirNodes()
+        notifyDataSetChanged()
+
+        if (search)
+            onItemClickListener?.onCloseSearch()
+    }
+
+    private fun updateDirNodes() {
+        dirNodes.clear()
+
+        nodes.filter { it.parentCode == curDir }
+                .forEach { dirNodes.add(it) }
+    }
+
+    fun getList(): ArrayList<Node> = if (search) nodesSearch else dirNodes
 
     fun get(n: Int) : Node = getList()[n]
 
@@ -119,7 +152,7 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-	class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+	inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
 		var ll: LinearLayout = itemView!!.layout_item
         var image: ImageView = ll.image
         var title: TextView = ll.title
@@ -127,6 +160,17 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         var button: ImageButton = ll.button
         var progress: ProgressBar = ll.progress
         var posterCode: String = ""
+        init {
+            ll.setOnClickListener {
+                I.Log("kek")
+                val position = recyclerView.getChildAdapterPosition(ll)
+                val node = getList()[position]
+                if (node is Subfolder)
+                    openFolder(node.code)
+                else
+                    onItemClickListener?.onVideoClick(position)
+            }
+        }
     }
     internal inner class ImageSetter : AsyncTask<ViewHolder, Int, ViewHolder>() {
         lateinit var code: String
@@ -164,5 +208,9 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         }
     }
 
+    interface OnItemClickListener {
+        fun onVideoClick(position: Int)
+        fun onCloseSearch()
+    }
 
 }

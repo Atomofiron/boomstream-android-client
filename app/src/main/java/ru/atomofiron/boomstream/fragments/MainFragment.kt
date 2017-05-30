@@ -21,9 +21,10 @@ import ru.atomofiron.boomstream.mvp.presenters.FolderPresenter
 import ru.atomofiron.boomstream.mvp.views.FolderView
 import ru.atomofiron.boomstream.snack
 
-class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPressedListener {
+class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPressedListener, NotesAdapter.OnItemClickListener {
 
     private var c: Int = 0
+    private var mainView: View? = null
 
     companion object {
         const val TAG = "MainFragment"
@@ -38,6 +39,14 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
+        retainInstance = true
+
+        (activity as MainActivity).onBackPressedListener = this
+
+        if (mainView != null) {
+            (mainView!!.parent as ViewGroup).removeView(mainView)
+            return mainView
+        }
 
         val view = inflater!!.inflate(R.layout.fragment_main, container, false)
 
@@ -51,15 +60,16 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
 
         RxTextView.textChanges(etSearch)
                 .map { text -> text.trim() }
-                .subscribe { text -> if (isResumed) presenter.search(text.toString()) }
-
-        (activity as MainActivity).onBackPressedListener = this
+                .filter { text -> !text.isEmpty() }
+                .subscribe { text -> search(text.toString()) }
 
         listAdapter = NotesAdapter(LayoutInflater.from(context), context.resources)
+        listAdapter.onItemClickListener = this
 
         rvNotesList.layoutManager = LinearLayoutManager(context) as RecyclerView.LayoutManager
         rvNotesList.adapter = listAdapter
 
+        mainView = view
         return view
     }
 
@@ -75,39 +85,40 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
     }
 
     override fun onBackPressed(): Boolean {
-        // todo up by folder
-        return false
+        return listAdapter.popStack()
     }
 
     // Custom //
 
     private fun switchSearch() {
         val show = etSearch.visibility != View.VISIBLE
-        etSearch.visibility = if (show) View.VISIBLE else View.GONE
+        etSearch.visibility = if (etSearch.visibility != View.VISIBLE) View.VISIBLE else View.GONE
 
-        if (!show) // можно ещё сократить, но тогда будет висеть куча запросов в ViewState, но это не точно
-            presenter.search("")
-        else if (!etSearch.text.isEmpty())
-            presenter.search(etSearch.text.toString())
-        // прустой query = отключенный поиск
-        // не очищаю etSearch, чтобы введённый текст мог быть использован пользователем снова
+        listAdapter.setQuery(if (show) etSearch.text.toString() else "")
     }
 
     fun updateView() {
         tvEmpty.visibility = if (listAdapter.itemCount == 0) View.VISIBLE else View.GONE
     }
 
-    // MainView implementation //
-
-    override fun onNodesLoaded(nodes: List<Node>) {
-        listAdapter.setData(nodes as ArrayList<Node>)
+    fun search(query: String) {
+        etSearch.visibility = if (query.isEmpty()) View.GONE else View.VISIBLE
+        listAdapter.setQuery(query)
 
         updateView()
     }
 
-    override fun onSearch(query: String) {
-        etSearch.visibility = if (query.isEmpty()) View.GONE else View.VISIBLE
-        listAdapter.setQuery(query)
+    override fun onVideoClick(position: Int) {
+    }
+
+    override fun onCloseSearch() {
+        switchSearch()
+    }
+
+    // MainView implementation //
+
+    override fun onNodesLoaded(nodes: List<Node>) {
+        listAdapter.setData(nodes as ArrayList<Node>)
 
         updateView()
     }

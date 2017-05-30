@@ -12,13 +12,6 @@ import retrofit2.http.Url
 interface Api {
 
     @GET("/api/media/folder")
-    fun getRoot(@Query("apikey") apikey: String,
-                  @Query("format") format: String,
-                  @Query("limit") limit: Int,
-                  @Query("offset") offset: Int
-    ): Call<Folder>
-
-    @GET("/api/media/folder")
     fun getFolder(@Query("apikey") apikey: String,
                   @Query("format") format: String,
                   @Query("limit") limit: Int,

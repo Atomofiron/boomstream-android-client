@@ -10,6 +10,7 @@ import ru.atomofiron.boomstream.models.Node
 import ru.atomofiron.boomstream.models.retrofit.folder.Folder
 import ru.atomofiron.boomstream.models.retrofit.folder.Media
 import android.os.AsyncTask
+import ru.atomofiron.boomstream.models.retrofit.folder.Subfolder
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -35,21 +36,31 @@ object FolderModel {
                 callback(values[0])
             }
             override fun doInBackground(vararg params: Int?): Unit {
-                val response = App.api.getRoot(App.apikey!!, "json", 1024, 0).execute()
-
-                if (!response.isSuccessful) {
-                    I.Log("getRoot() not Successful")
-                    return
-                }
-
-                val list = collectNodes(response)
+                val list = loadChildren("")
 
                 publishProgress(list)
-
                 list.filter { it is Media }
                         .forEach { loadImageIfNoExists(it as Media) }
             }
         }.execute()
+    }
+
+    private fun loadChildren(code: String): ArrayList<Node> {
+        val response = App.api.getFolder(App.apikey!!, "json", 1024, 0, code).execute()
+
+        if (!response.isSuccessful)
+            return ArrayList()
+
+        val folder = collectNodes(response)
+        val fullList = ArrayList<Node>(folder)
+
+        folder.forEach {
+            it.parentCode = code
+
+            if (it is Subfolder)
+                fullList += loadChildren(it.code)
+        }
+        return fullList
     }
 
     private fun collectNodes(response: Response<Folder>): ArrayList<Node> {
