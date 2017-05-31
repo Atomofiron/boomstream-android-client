@@ -42,12 +42,6 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
 
-        if (mainView != null) {
-            if (mainView!!.parent != null)
-                (mainView!!.parent as ViewGroup).removeView(mainView)
-            return mainView
-        }
-
         val view = inflater!!.inflate(R.layout.fragment_folder, container, false)
 
         val etSearch = view.findViewById(R.id.etSearch) as EditText
