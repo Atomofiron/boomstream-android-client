@@ -24,3 +24,4 @@ fun View.snack(text: String, action: String, callback: () -> Unit) =
 
 fun View.snack(textId: Int, duration: Int, actionId: Int, callback: () -> Unit) =
     Snackbar.make(this, textId, duration).setAction(actionId, { callback() }).show()
+

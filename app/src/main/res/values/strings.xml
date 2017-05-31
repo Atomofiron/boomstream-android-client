@@ -85,5 +85,10 @@
     <string name="nav_title_app">App</string>
     <string name="nav_item_settings">Settings</string>
     <string name="nav_title_exit">Exit</string>
-    <string name="load_videos">load the list of videos</string>
+    <string name="load_project">Load the project</string>
+    <string name="media_play">Play</string>
+    <string name="media_resolution">Resolution: %1$sx%2$s</string>
+    <string name="media_duration">Duration: %s</string>
+    <string name="media_mediastatus">MediaStatus: %s</string>
+    <string name="media_quality">Quality: %s</string>
 </resources>

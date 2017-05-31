@@ -7,7 +7,9 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
-public class Folder {
+import ru.atomofiron.boomstream.models.retrofit.Response;
+
+public class Folder extends Response {
 
     @SerializedName("countTotal")
     @Expose
@@ -21,6 +23,9 @@ public class Folder {
     @SerializedName("Status")
     @Expose
     private String status;
+    @SerializedName("Message")
+    @Expose
+    private String message;
 
     public Integer getCountTotal() {
         return countTotal;
@@ -56,4 +61,8 @@ public class Folder {
         this.status = status;
     }
 
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }

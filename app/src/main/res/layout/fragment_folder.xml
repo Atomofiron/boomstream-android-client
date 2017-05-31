@@ -20,15 +20,6 @@
             android:visibility="gone"
             />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/tvEmpty"
-            android:text="@string/empty"
-            android:gravity="center"
-            android:visibility="gone"
-            />
-
         <android.support.v4.widget.SwipeRefreshLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/swipeLayout"
@@ -43,6 +34,15 @@
                 />
         </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/tvEmpty"
+        android:text="@string/empty"
+        android:gravity="center"
+        android:visibility="gone"
+        />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -13,7 +13,7 @@ class App : Application() {
         lateinit var api: Api
             private set
 
-        var apikey: String? = null
+        var apikey: String = ""
     }
 
     override fun onCreate() {

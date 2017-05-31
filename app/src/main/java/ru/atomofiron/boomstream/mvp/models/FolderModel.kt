@@ -17,41 +17,43 @@ import java.io.InputStream
 
 object FolderModel {
 
-    fun loadNodes(callback: (nodes: ArrayList<Node>) -> Unit, failback: (message: Int) -> Unit) {
-        object : AsyncTask<Int, ArrayList<Node>, Int>() {
+    private val STATUS_FAILED = "Failed"
+
+    fun loadNodes(callback: (nodes: ArrayList<Node>) -> Unit, failback: (message: String) -> Unit) {
+        object : AsyncTask<Int, ArrayList<Node>, String>() {
             override fun onProgressUpdate(vararg values: ArrayList<Node>) {
                 super.onProgressUpdate(*values)
                 callback(values[0])
             }
-            override fun doInBackground(vararg params: Int?): Int {
+            override fun doInBackground(vararg params: Int?): String? {
                 val list: ArrayList<Node>
                 try {
                     list = loadChildren("")
                 } catch (e: Exception) {
-                    return R.string.network_fail
+                    return e.message ?: R.string.network_fail.toString()
                 }
 
                 publishProgress(list)
                 list.filter { it is Media }
                         .forEach { loadImageIfNoExists(it as Media) }
 
-                return 0
+                return null
             }
 
-            override fun onPostExecute(result: Int) {
+            override fun onPostExecute(result: String?) {
                 super.onPostExecute(result)
 
-                if (result != 0)
+                if (result != null)
                     failback(result)
             }
         }.execute()
     }
 
     private fun loadChildren(code: String): ArrayList<Node> {
-        val response = App.api.getFolder(App.apikey!!, "json", 1024, 0, code).execute()
+        val response = App.api.getFolder(App.apikey, "json", 1024, 0, code).execute()
 
         if (!response.isSuccessful)
-            return ArrayList()
+            throw ApiException(response.message())
 
         val folder = collectNodes(response)
         val fullList = ArrayList<Node>(folder)
@@ -70,6 +72,9 @@ object FolderModel {
         val folder = response.body()
 
         if (folder != null) {
+            if (folder.status == STATUS_FAILED)
+                throw ApiException(folder.message)
+
             list += folder.folders
             list += folder.medias
         }
@@ -117,4 +122,5 @@ object FolderModel {
         }
     }
 
+    class ApiException(message: String) : Exception(message)
 }

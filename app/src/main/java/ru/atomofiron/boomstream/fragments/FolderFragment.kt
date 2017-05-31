@@ -11,8 +11,9 @@ import android.view.*
 import android.widget.EditText
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.arellomobile.mvp.presenter.PresenterType
 import com.jakewharton.rxbinding2.widget.RxTextView
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_folder.*
 import ru.atomofiron.boomstream.models.Node
 
 import ru.atomofiron.boomstream.R
@@ -22,17 +23,17 @@ import ru.atomofiron.boomstream.mvp.presenters.FolderPresenter
 import ru.atomofiron.boomstream.mvp.views.FolderView
 import ru.atomofiron.boomstream.snack
 
-class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPressedListener, NotesAdapter.OnItemClickListener {
+class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPressedListener, NotesAdapter.OnFolderClickListener {
 
     private var c: Int = 0
     private var mainView: View? = null
 
     companion object {
-        const val TAG = "MainFragment"
-        fun getIntent(context: Context): Intent = Intent(context, MainFragment::class.java)
+        const val TAG = "FolderFragment"
+        fun getIntent(context: Context): Intent = Intent(context, FolderFragment::class.java)
     }
 
-    @InjectPresenter
+    @InjectPresenter(type=PresenterType.GLOBAL)
     lateinit var presenter: FolderPresenter
     private lateinit var listAdapter: NotesAdapter
 
@@ -40,22 +41,19 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setHasOptionsMenu(true)
-        retainInstance = true
-
-        (activity as MainActivity).onBackPressedListener = this
 
         if (mainView != null) {
-            (mainView!!.parent as ViewGroup).removeView(mainView)
+            if (mainView!!.parent != null)
+                (mainView!!.parent as ViewGroup).removeView(mainView)
             return mainView
         }
 
-        val view = inflater!!.inflate(R.layout.fragment_main, container, false)
+        val view = inflater!!.inflate(R.layout.fragment_folder, container, false)
 
         val etSearch = view.findViewById(R.id.etSearch) as EditText
         val fab = view.findViewById(R.id.fab) as FloatingActionButton
         val rvNotesList = view.findViewById(R.id.rvNotesList) as RecyclerView
         val swipeLayout = view.findViewById(R.id.swipeLayout) as SwipeRefreshLayout
-        swipeLayout.isRefreshing = true
         swipeLayout.setOnRefreshListener {
             presenter.onReloadNodes()
         }
@@ -69,14 +67,25 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
                 .filter { isResumed }
                 .subscribe { text -> search(text.toString()) }
 
-        listAdapter = NotesAdapter(LayoutInflater.from(context), context.resources)
-        listAdapter.onItemClickListener = this
+        listAdapter = NotesAdapter(LayoutInflater.from(activity), activity.resources)
+        listAdapter.onFolderClickListener = this
+        listAdapter.onMediaClickListener = activity as MainActivity
 
-        rvNotesList.layoutManager = LinearLayoutManager(context) as RecyclerView.LayoutManager
+        rvNotesList.layoutManager = LinearLayoutManager(activity) as RecyclerView.LayoutManager
         rvNotesList.adapter = listAdapter
 
         mainView = view
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as MainActivity).onBackPressedListener = this
+        presenter.loadNodesIfNecessary()
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -91,7 +100,7 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
     }
 
     override fun onBackPressed(): Boolean {
-        return listAdapter.popStack()
+        return listAdapter.goUp()
     }
 
     // Custom //
@@ -114,11 +123,9 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
         updateView()
     }
 
-    override fun onVideoClick(position: Int) {
-    }
-
-    override fun onCloseSearch() {
-        switchSearch()
+    override fun onFolderClick(code: String) {
+        listAdapter.setQuery("")
+        presenter.onOpenFolder(code)
     }
 
     // MainView implementation //
@@ -130,8 +137,25 @@ class MainFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPres
         updateView()
     }
 
-    override fun onLoadFail(message: Int) {
-        swipeLayout.isRefreshing = false
-        fab.snack(getString(message))
+    override fun onNodesReloading() {
+        listAdapter.clearData()
+        swipeLayout.isRefreshing = true
+
+        updateView()
     }
+
+    override fun onNodesLoadFail(message: String) {
+        swipeLayout.isRefreshing = false
+
+        try {
+            fab.snack(getString(message.toInt()))
+        } catch (e: Exception) {
+            fab.snack(message)
+        }
+    }
+
+    override fun onOpenFolder(code: String) {
+        listAdapter.openFolder(code)
+    }
+
 }

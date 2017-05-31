@@ -1,6 +1,7 @@
 
 package ru.atomofiron.boomstream.models.retrofit.folder;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -131,8 +132,9 @@ public class Media extends Node {
         this.poster = poster;
     }
 
+    @NotNull
     public List<Transcode> getTranscodes() {
-        return transcodes;
+        return transcodes == null ? new ArrayList<Transcode>() : transcodes;
     }
 
     public void setTranscodes(List<Transcode> transcodes) {
