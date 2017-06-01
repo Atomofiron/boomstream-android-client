@@ -1,6 +1,7 @@
 package ru.atomofiron.boomstream
 
 import android.app.Application
+import android.support.v7.app.AppCompatDelegate
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -26,5 +27,7 @@ class App : Application() {
                 .build()
 
         api = retrofit.create(Api::class.java)
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 }
