@@ -66,9 +66,13 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
         fab.menu_item_pick.setImageResource(R.drawable.ic_video_library)
         fab.menu_item_record.setImageResource(R.drawable.ic_shutter)
         fab.menu_item_pick.setOnClickListener {
+            fab.close(true)
+
             requestPickVideo()
         }
         fab.menu_item_record.setOnClickListener {
+            fab.close(true)
+
             requestRecordVideo()
         }
 

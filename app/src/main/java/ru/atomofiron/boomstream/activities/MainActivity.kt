@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(), NotesAdapter.OnMediaClickListener, Nav
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        if (resultCode != Activity.RESULT_OK)
+        if (resultCode != Activity.RESULT_OK || intent == null)
             return
 
         when (requestCode) {
