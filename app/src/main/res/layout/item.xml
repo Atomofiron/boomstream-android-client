@@ -27,6 +27,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/title"
             android:text="Title"
+            android:lines="1"
+            android:ellipsize="end"
             android:textAppearance="?attr/textAppearanceListItem"
             />
 

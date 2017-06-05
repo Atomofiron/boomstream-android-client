@@ -2,12 +2,15 @@
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:text="720"
     android:textColor="@color/resolutionColor"
     android:background="@drawable/rounded_corners"
     android:gravity="center"
     android:padding="@dimen/padding_micro"
     android:layout_margin="@dimen/padding_micro"
+    android:lines="1"
+    android:ellipsize="end"
+    android:textSize="@dimen/text_middle"
     />
