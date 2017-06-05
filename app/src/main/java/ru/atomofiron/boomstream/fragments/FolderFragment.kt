@@ -58,7 +58,7 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
         RxTextView.textChanges(etSearch)
                 .map { text -> text.trim() }
-                .filter { isResumed }
+                .filter { text -> isResumed && text.isNotEmpty() }
                 .subscribe { text -> search(text.toString()) }
 
         listAdapter = NotesAdapter(LayoutInflater.from(activity), activity.resources)
@@ -100,8 +100,11 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
     // Custom //
 
     private fun switchSearch() {
-        val show = etSearch.visibility != View.VISIBLE
-        etSearch.visibility = if (etSearch.visibility != View.VISIBLE) View.VISIBLE else View.GONE
+        showSearch(etSearch.visibility != View.VISIBLE)
+    }
+
+    private fun showSearch(show: Boolean) {
+        etSearch.visibility = if (show) View.VISIBLE else View.GONE
 
         listAdapter.setQuery(if (show) etSearch.text.toString() else "")
     }
@@ -150,6 +153,8 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
     override fun onOpenFolder(code: String) {
         listAdapter.openFolder(code)
+
+        showSearch(false)
     }
 
 }
