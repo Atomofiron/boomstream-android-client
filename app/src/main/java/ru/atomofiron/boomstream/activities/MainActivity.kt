@@ -1,6 +1,7 @@
 package ru.atomofiron.boomstream.activities
 
 import android.app.Activity
+import android.app.FragmentTransaction
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -70,6 +71,7 @@ class MainActivity : AppCompatActivity(), NotesAdapter.OnMediaClickListener, Nav
         supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment, FRAGMENT_FOLDER_TAG)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commitAllowingStateLoss()
     }
 
