@@ -1,13 +1,12 @@
 package ru.atomofiron.boomstream.fragments
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
 import android.widget.Button
 
 import ru.atomofiron.boomstream.R
@@ -16,8 +15,8 @@ import ru.atomofiron.boomstream.models.retrofit.folder.Media
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_media.*
 import kotlinx.android.synthetic.main.fragment_media.view.*
-import ru.atomofiron.boomstream.I
-
+import android.widget.MediaController
+import android.widget.VideoView
 
 class MediaFragment : Fragment() {
 
@@ -84,13 +83,16 @@ class MediaFragment : Fragment() {
         (activity as MainActivity).onBackPressedListener = null
     }
 
-    private fun playVideo() { // не не, WebView не пойдёт
+    private fun playVideo() {
         video_container.removeAllViews()
-        val webView = WebView(co)
-        webView.settings.javaScriptEnabled = true
-        val player = media.playerCode.replace("{{width}}", "100%").replace("{{height}}", "100%")
-        I.Log("WTF2: "+player)
-        webView.loadDataWithBaseURL("", "<html><head><style>html, body {padding:0px;margin:0px;}</style></head><body>${Html.fromHtml(player)}</body></html>", "text/html", "UTF-8", "")
-        video_container.addView(webView)
+
+        val videoView = VideoView(context)
+        val mediaController = MediaController(context)
+        mediaController.setAnchorView(videoView)
+        videoView.setMediaController(mediaController)
+        videoView.setVideoURI(Uri.parse(media.transcodes[0].pseudoMP4))
+        videoView.start()
+
+        video_container.addView(videoView)
     }
 }
