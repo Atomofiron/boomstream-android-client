@@ -91,4 +91,7 @@
     <string name="media_duration">Duration: %s</string>
     <string name="media_mediastatus">MediaStatus: %s</string>
     <string name="media_quality">Quality: %s</string>
+    <string name="no_apps">You have no applications able to perform this action</string>
+    <string name="pick_video">Pick a video</string>
+    <string name="record_video">Record a new video</string>
 </resources>

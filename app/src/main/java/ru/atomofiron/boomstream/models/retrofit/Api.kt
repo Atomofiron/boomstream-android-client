@@ -11,6 +11,11 @@ import retrofit2.http.Url
 
 interface Api {
 
+    companion object {
+        val STATUS_SUCCESS = "Success"
+        val STATUS_FAILED = "Failed"
+    }
+
     @GET("/api/media/folder")
     fun getFolder(@Query("apikey") apikey: String,
                   @Query("format") format: String,
@@ -21,4 +26,12 @@ interface Api {
 
     @GET
     fun loadData(@Url url: String): Call<ResponseBody>
+
+    @GET("/api/media/create")
+    fun createMedia(@Query("apikey") apikey: String,
+                  @Query("format") format: String,
+                  @Query("title") title: String,
+                  @Query("link") link: String,
+                  @Query("folderCode") folderCode: String
+    ): Call<Result>
 }

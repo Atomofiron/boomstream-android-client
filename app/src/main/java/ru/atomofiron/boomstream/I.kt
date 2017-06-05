@@ -10,6 +10,8 @@ import android.view.View
 class I {
     companion object {
         val PREF_API_KEY = "PREF_API_KEY"
+        val ACTION_VIDEO_CAPTURE = 101
+        val ACTION_VIDEO_GET = 102
 
         fun Log(log: String) = Log.e("atomofiron", log)
         fun SP(co: Context) : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(co)
@@ -18,6 +20,9 @@ class I {
 
 fun View.snack(text: String) =
         Snackbar.make(this, text, Snackbar.LENGTH_LONG).show()
+
+fun View.snack(stringId: Int) =
+        Snackbar.make(this, stringId, Snackbar.LENGTH_SHORT).show()
 
 fun View.snack(text: String, action: String, callback: () -> Unit) =
     Snackbar.make(this, text, Snackbar.LENGTH_LONG).setAction(action, { callback() }).show()

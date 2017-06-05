@@ -1,5 +1,6 @@
 package ru.atomofiron.boomstream.activities
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -98,6 +99,16 @@ class MainActivity : AppCompatActivity(), NotesAdapter.OnMediaClickListener, Nav
 
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        if (resultCode != Activity.RESULT_OK)
+            return
+
+        when (requestCode) {
+            I.ACTION_VIDEO_CAPTURE -> return
+            I.ACTION_VIDEO_GET -> return
+        }
     }
 
     private fun openMedia(media: Media) {

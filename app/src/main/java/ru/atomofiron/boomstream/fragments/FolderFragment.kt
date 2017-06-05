@@ -3,7 +3,6 @@ package ru.atomofiron.boomstream.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -22,6 +21,11 @@ import ru.atomofiron.boomstream.adapters.NotesAdapter
 import ru.atomofiron.boomstream.mvp.presenters.FolderPresenter
 import ru.atomofiron.boomstream.mvp.views.FolderView
 import ru.atomofiron.boomstream.snack
+import android.provider.MediaStore
+import com.github.clans.fab.FloatingActionMenu
+import kotlinx.android.synthetic.main.fragment_folder.view.*
+import ru.atomofiron.boomstream.I
+
 
 class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPressedListener, NotesAdapter.OnFolderClickListener {
 
@@ -45,15 +49,27 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
         val view = inflater!!.inflate(R.layout.fragment_folder, container, false)
 
         val etSearch = view.findViewById(R.id.etSearch) as EditText
-        val fab = view.findViewById(R.id.fab) as FloatingActionButton
+        val fab = view.findViewById(R.id.fab) as FloatingActionMenu
         val rvNotesList = view.findViewById(R.id.rvNotesList) as RecyclerView
         val swipeLayout = view.findViewById(R.id.swipeLayout) as SwipeRefreshLayout
         swipeLayout.setOnRefreshListener {
             presenter.onReloadNodes()
         }
 
-        fab.setOnClickListener {
-            fab.snack("Karr $c", "+1", { tvEmpty.text = (++c).toString() })
+        // у com.github.clans.fab.FloatingActionButton нет возможности указать цвет в xml
+        fab.menu_item_pick.setColorNormalResId(R.color.colorAccent)
+        fab.menu_item_pick.setColorPressedResId(R.color.colorAccent)
+        fab.menu_item_record.setColorNormalResId(R.color.colorAccent)
+        fab.menu_item_record.setColorPressedResId(R.color.colorAccent)
+        // у com.github.clans.fab.FloatingActionButton нет возможности указать векторное изображение
+        // при vectorDrawables.useSupportLibrary = true
+        fab.menu_item_pick.setImageResource(R.drawable.ic_video_library)
+        fab.menu_item_record.setImageResource(R.drawable.ic_shutter)
+        fab.menu_item_pick.setOnClickListener {
+            requestPickVideo()
+        }
+        fab.menu_item_record.setOnClickListener {
+            requestRecordVideo()
         }
 
         RxTextView.textChanges(etSearch)
@@ -70,6 +86,23 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
         mainView = view
         return view
+    }
+
+    private fun requestRecordVideo() {
+        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        if (intent.resolveActivity(activity.packageManager) != null)
+            activity.startActivityForResult(intent, I.ACTION_VIDEO_CAPTURE)
+        else
+            fab.snack(R.string.no_apps)
+    }
+
+    private fun requestPickVideo() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "video/*"
+        if (intent.resolveActivity(activity.packageManager) != null)
+            activity.startActivityForResult(Intent.createChooser(intent, getString(R.string.pick_video)), I.ACTION_VIDEO_GET)
+        else
+            fab.snack(R.string.no_apps)
     }
 
     override fun onStart() {
