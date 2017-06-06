@@ -12,14 +12,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="240dp"
-            android:id="@+id/video_container">
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/media_play"
-                android:text="@string/media_play"
-                />
-        </FrameLayout>
+            android:id="@+id/video_container"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -60,6 +54,13 @@
             android:id="@+id/media_mediastatus"
             android:text="@string/media_mediastatus"
             android:textSize="@dimen/text_middle"
+            />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:layout_gravity="right"
             />
 
     </LinearLayout>

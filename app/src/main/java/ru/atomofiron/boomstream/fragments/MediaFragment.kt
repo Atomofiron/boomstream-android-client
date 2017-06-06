@@ -16,8 +16,13 @@ import kotlinx.android.synthetic.main.fragment_media.*
 import kotlinx.android.synthetic.main.fragment_media.view.*
 import android.util.DisplayMetrics
 import android.widget.*
+import ru.atomofiron.boomstream.App
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import ru.atomofiron.boomstream.I
 
-class MediaFragment : Fragment() {
+
+class MediaFragment : Fragment(), OnItemSelectedListener {
 
     private lateinit var co: Context
     private var mainView: View? = null
@@ -65,17 +70,19 @@ class MediaFragment : Fragment() {
         view.media_duration.text = co.getString(R.string.media_duration, media.duration)
         view.media_mediastatus.text = co.getString(R.string.media_mediastatus, media.mediaStatus)
 
-        view.video_container.removeAllViews()
-        val button = Button(activity)
-        button.text = getString(R.string.media_play)
-        button.setOnClickListener { playVideo() }
-        view.video_container.addView(button)
-
         val metrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(metrics)
         val params = view.video_container.layoutParams
         params.height = metrics.widthPixels * 9 / 16 + 2
         view.video_container.layoutParams = params
+
+        view.spinner.adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, media.transcodesTitles)
+        view.spinner.onItemSelectedListener = this
+    }
+
+    override fun onNothingSelected(arg0: AdapterView<*>) {}
+    override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+        playVideo(media.transcodes[pos].pseudoMP4)
     }
 
     override fun onAttach(context: Context?) {
@@ -88,7 +95,7 @@ class MediaFragment : Fragment() {
         (activity as MainActivity).onBackPressedListener = null
     }
 
-    private fun playVideo() {
+    private fun playVideo(url: String) {
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
             (activity as AppCompatActivity).supportActionBar?.hide()
 
@@ -98,8 +105,7 @@ class MediaFragment : Fragment() {
         val mediaController = MediaController(context)
         mediaController.setAnchorView(videoView)
         videoView.setMediaController(mediaController)
-        videoView.setVideoURI(Uri.parse(media.transcodes[0].pseudoMP4))
-        videoView.start()
+        videoView.setVideoPath(App.getVideoCache(context).getProxyUrl(url))
 
         video_container.addView(videoView)
     }

@@ -137,6 +137,18 @@ public class Media extends Node {
         return transcodes == null ? new ArrayList<Transcode>() : transcodes;
     }
 
+    @NotNull
+    public ArrayList<String> getTranscodesTitles() {
+        ArrayList<String> array = new ArrayList<>();
+        if (transcodes == null)
+            return array;
+
+        for (Transcode t : transcodes)
+            array.add(t.getTitle());
+
+        return array;
+    }
+
     public void setTranscodes(List<Transcode> transcodes) {
         this.transcodes = transcodes;
     }
