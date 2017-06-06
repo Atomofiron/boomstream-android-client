@@ -1,12 +1,12 @@
 package ru.atomofiron.boomstream.fragments
 
 import android.content.Context
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v7.app.AppCompatActivity
+import android.view.*
 import android.widget.Button
 
 import ru.atomofiron.boomstream.R
@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.fragment_media.*
 import kotlinx.android.synthetic.main.fragment_media.view.*
 import android.widget.MediaController
 import android.widget.VideoView
+import android.util.DisplayMetrics
 
 class MediaFragment : Fragment() {
 
@@ -68,9 +69,15 @@ class MediaFragment : Fragment() {
 
         view.video_container.removeAllViews()
         val button = Button(activity)
-        button.text = "Play"
+        button.text = getString(R.string.media_play)
         button.setOnClickListener { playVideo() }
         view.video_container.addView(button)
+
+        val metrics = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getMetrics(metrics)
+        val params = view.video_container.layoutParams
+        params.height = metrics.widthPixels * 9 / 16 + 2
+        view.video_container.layoutParams = params
     }
 
     override fun onAttach(context: Context?) {
@@ -84,6 +91,9 @@ class MediaFragment : Fragment() {
     }
 
     private fun playVideo() {
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            (activity as AppCompatActivity).supportActionBar?.hide()
+
         video_container.removeAllViews()
 
         val videoView = VideoView(context)
@@ -94,5 +104,10 @@ class MediaFragment : Fragment() {
         videoView.start()
 
         video_container.addView(videoView)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (activity as AppCompatActivity).supportActionBar?.show()
     }
 }
