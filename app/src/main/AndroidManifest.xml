@@ -23,9 +23,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
-            android:label="@string/title_activity_settings"/>
-        <activity
             android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop"/>
