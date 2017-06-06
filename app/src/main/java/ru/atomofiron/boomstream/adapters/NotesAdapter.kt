@@ -54,8 +54,6 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
 
         if (node is Subfolder) {
             holder.resolutions.visibility = View.GONE
-            holder.button.visibility = View.GONE
-            holder.progress.visibility = View.GONE
 
             holder.title.text = node.title
             holder.image.setImageDrawable(res.getDrawable(
@@ -63,8 +61,6 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
             holder.posterCode = ""
         } else if (node is Media) {
             holder.resolutions.visibility = View.VISIBLE
-            holder.button.visibility = View.VISIBLE
-            holder.progress.visibility = View.GONE
 
             holder.title.text = node.title
             holder.posterCode = node.poster.code
@@ -162,8 +158,6 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         var image: ImageView = ll.image
         var title: TextView = ll.title
         var resolutions: LinearLayout = ll.resolutions
-        var button: ImageButton = ll.button
-        var progress: ProgressBar = ll.progress
         var posterCode: String = ""
         init {
             ll.setOnClickListener {

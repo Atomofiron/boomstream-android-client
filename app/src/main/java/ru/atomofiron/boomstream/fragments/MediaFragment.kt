@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.*
-import android.widget.Button
 
 import ru.atomofiron.boomstream.R
 import ru.atomofiron.boomstream.activities.MainActivity
@@ -15,9 +14,8 @@ import ru.atomofiron.boomstream.models.retrofit.folder.Media
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_media.*
 import kotlinx.android.synthetic.main.fragment_media.view.*
-import android.widget.MediaController
-import android.widget.VideoView
 import android.util.DisplayMetrics
+import android.widget.*
 
 class MediaFragment : Fragment() {
 

@@ -10,6 +10,8 @@ import android.view.View
 class I {
     companion object {
         val PREF_API_KEY = "PREF_API_KEY"
+        val PREF_CACHE_SIZE_MB = "pref_cache_size_mb"
+        val PREF_CACHE_COUNT = "pref_cache_count"
         val ACTION_VIDEO_CAPTURE = 101
         val ACTION_VIDEO_GET = 102
 
