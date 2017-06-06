@@ -2,7 +2,6 @@ package ru.atomofiron.boomstream.fragments
 
 import android.content.Context
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -19,21 +18,11 @@ import android.widget.*
 import ru.atomofiron.boomstream.App
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import ru.atomofiron.boomstream.I
-
 
 class MediaFragment : Fragment(), OnItemSelectedListener {
 
     private lateinit var co: Context
-    private var mainView: View? = null
-    private var media = Media()
-
-    fun setMedia(media: Media): MediaFragment {
-        mainView = null
-        this.media = media
-
-        return this
-    }
+    private lateinit var media: Media
 
     companion object {
         private val KEY_MEDIA: String = "KEY_MEDIA"
@@ -56,12 +45,11 @@ class MediaFragment : Fragment(), OnItemSelectedListener {
 
         init(view)
 
-        mainView = view
         return view
     }
 
     private fun init(view: View) {
-        //media = Gson().fromJson(arguments.getString(KEY_MEDIA), Media::class.java)
+        media = Gson().fromJson(arguments.getString(KEY_MEDIA), Media::class.java)
         view.media_title.text = media.title
         view.media_resolution.text = co.getString(R.string.media_resolution, media.width, media.height)
         var transcodes = ""
@@ -81,7 +69,7 @@ class MediaFragment : Fragment(), OnItemSelectedListener {
     }
 
     override fun onNothingSelected(arg0: AdapterView<*>) {}
-    override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+    override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
         playVideo(media.transcodes[pos].pseudoMP4)
     }
 
