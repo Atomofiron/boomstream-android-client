@@ -30,11 +30,10 @@ class App : Application() {
             return videoCache!!
         }
         fun updateVideoCache(context: Context?) {
-            val sp = PreferenceManager.getDefaultSharedPreferences(context)
             videoCache = HttpProxyCacheServer.Builder(context)
                     .fileNameGenerator { url -> url.substring(url.lastIndexOf('/') + 1) }
-                    .maxCacheSize(1024L * 1024L * sp.getInt(I.PREF_CACHE_SIZE_MB, 100))
-                    .maxCacheFilesCount(sp.getInt(I.PREF_CACHE_COUNT, 10))
+                    .maxCacheSize(1024L * 1024L * 100L)
+                    .maxCacheFilesCount(10)
                     .build()
         }
     }
