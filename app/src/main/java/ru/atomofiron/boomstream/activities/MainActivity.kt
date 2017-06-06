@@ -87,14 +87,12 @@ class MainActivity : AppCompatActivity(), NotesAdapter.OnMediaClickListener, Nav
                 openedMedia = null
                 return
             }
-
-            super.onBackPressed()
-            startActivity(Intent(this, ApikeyActivity::class.java))
         }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.nav_apikey -> startActivity(Intent(this, ApikeyActivity::class.java))
             R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             R.id.nav_exit -> finish()
         }

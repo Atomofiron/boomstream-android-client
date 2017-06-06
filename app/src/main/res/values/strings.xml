@@ -94,4 +94,5 @@
     <string name="no_apps">You have no applications able to perform this action</string>
     <string name="pick_video">Pick a video</string>
     <string name="record_video">Record a new video</string>
+    <string name="nav_item_apikey">Api key</string>
 </resources>

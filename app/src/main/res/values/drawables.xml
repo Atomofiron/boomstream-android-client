@@ -3,6 +3,7 @@
     <item name="ic_menu_gallery" type="drawable">@android:drawable/ic_menu_gallery</item>
     <item name="ic_menu_slideshow" type="drawable">@android:drawable/ic_menu_slideshow</item>
     <item name="ic_menu_manage" type="drawable">@android:drawable/ic_menu_manage</item>
+    <item name="ic_menu_key" type="drawable">@drawable/ic_key</item>
     <item name="ic_menu_settings" type="drawable">@drawable/ic_settings</item>
     <item name="ic_menu_exit" type="drawable">@drawable/ic_exit</item>
 </resources>

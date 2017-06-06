@@ -27,7 +27,8 @@
             android:label="@string/title_activity_settings"/>
         <activity
             android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"/>
 
     </application>
 
