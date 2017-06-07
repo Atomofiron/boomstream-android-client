@@ -8,5 +8,5 @@
     <color name="colorWhiteLite">#55ffffff</color>
     <color name="colorGrey">#ff737373</color>
     <color name="resolutionColor">#ffffffff</color>
-    <color name="resolutionBackground">#ff000000</color>
+    <color name="resolutionBackground">#ff468847</color>
 </resources>
