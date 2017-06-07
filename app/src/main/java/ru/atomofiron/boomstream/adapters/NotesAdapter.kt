@@ -135,7 +135,7 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     fun get(n: Int) : Node = getList()[n]
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : NotesAdapter.ViewHolder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false) as LinearLayout)
+            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false))
 
 	override fun getItemCount() : Int = getList().size
 
@@ -162,7 +162,7 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         init {
             ll.setOnClickListener {
                 I.Log("kek")
-                val position = recyclerView.getChildAdapterPosition(ll)
+                val position = recyclerView.getChildAdapterPosition(ll.parent as View)
                 val node = getList()[position]
                 if (node is Subfolder)
                     onFolderClickListener?.onFolderClick(node.code)
