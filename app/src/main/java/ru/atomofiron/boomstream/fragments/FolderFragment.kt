@@ -101,8 +101,13 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
     }
 
     private fun requestPickVideo() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        // при ACTION_PICK удобнее выбирать видео
+        val intent = Intent(Intent.ACTION_PICK)
         intent.type = "video/*"
+
+        if (intent.resolveActivity(activity.packageManager) == null)
+            intent.action = Intent.ACTION_GET_CONTENT
+
         if (intent.resolveActivity(activity.packageManager) != null)
             activity.startActivityForResult(Intent.createChooser(intent, getString(R.string.pick_video)), I.ACTION_VIDEO_PICK)
         else
