@@ -53,6 +53,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     kapt 'com.arello-mobile:moxy-compiler:1.5.3'
     provided 'org.glassfish:javax.annotation:10.0-b28'
+    compile files('libs/commons-net-3.6.jar')
 }
 
 buildscript {

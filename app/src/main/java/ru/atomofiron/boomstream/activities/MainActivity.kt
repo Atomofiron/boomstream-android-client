@@ -3,6 +3,7 @@ package ru.atomofiron.boomstream.activities
 import android.app.Activity
 import android.app.FragmentTransaction
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -13,6 +14,8 @@ import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import ru.atomofiron.boomstream.App
+import ru.atomofiron.boomstream.FTPService
 import ru.atomofiron.boomstream.R
 import ru.atomofiron.boomstream.adapters.NotesAdapter
 import ru.atomofiron.boomstream.models.retrofit.folder.Media
@@ -83,9 +86,36 @@ class MainActivity : AppCompatActivity(), NotesAdapter.OnMediaClickListener, Nav
             return
 
         when (requestCode) {
-            I.ACTION_VIDEO_CAPTURE -> return
-            I.ACTION_VIDEO_GET -> return
+            I.ACTION_VIDEO_CAPTURE, I.ACTION_VIDEO_PICK -> checkFTPLoginAndSendVideo(intent.data!!)
         }
+    }
+
+    private fun checkFTPLoginAndSendVideo(uri: Uri) {
+        val sp = I.SP(this)
+        val login = sp.getString(I.PREF_FTP_LOGIN, "")
+        if (App.ftpLogin == null && login.isEmpty()) {
+            // по-хорошему ftp login должен указываться в настройках, но их пока нет
+
+            I.showTextRequest(this, R.string.ftp_login, login, { input ->
+                sp.edit().putString(I.PREF_FTP_LOGIN, input).apply()
+                App.ftpLogin = input
+                onSendVideo(uri)
+            })
+        } else {
+            App.ftpLogin = login
+            onSendVideo(uri)
+        }
+    }
+
+    private fun onSendVideo(uri: Uri) {
+        I.showTextRequest(this, R.string.medias_name, "", { input ->
+            startService(
+                    Intent(this, FTPService::class.java)
+                            .putExtra(FTPService.URI_TO_UPLOAD, uri)
+                            .putExtra(FTPService.NAME_TO_UPLOAD, if (input.endsWith(".mp4")) input else input + ".mp4")
+            )
+        })
+
     }
 
     override fun onMediaClick(media: Media) {

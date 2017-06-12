@@ -15,11 +15,15 @@ import com.danikula.videocache.HttpProxyCacheServer
 class App : Application() {
 
     companion object {
+        val FTP_HOST = "ftp.boomstream.com"
+        val FTP_PORT = 21
+
         lateinit var cachePath: String
         lateinit var api: Api
             private set
 
         var apikey: String = ""
+        var ftpLogin: String? = null
 
         private var videoCache: HttpProxyCacheServer? = null
 

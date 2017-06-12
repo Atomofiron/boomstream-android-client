@@ -1,12 +1,12 @@
 package ru.atomofiron.boomstream.models.retrofit
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.*
 import ru.atomofiron.boomstream.models.retrofit.folder.Folder
-import retrofit2.http.Url
-
+import ru.atomofiron.boomstream.models.retrofit.media.UploadResult
 
 
 interface Api {
@@ -27,11 +27,4 @@ interface Api {
     @GET
     fun loadData(@Url url: String): Call<ResponseBody>
 
-    @GET("/api/media/create")
-    fun createMedia(@Query("apikey") apikey: String,
-                  @Query("format") format: String,
-                  @Query("title") title: String,
-                  @Query("link") link: String,
-                  @Query("folderCode") folderCode: String
-    ): Call<Result>
 }

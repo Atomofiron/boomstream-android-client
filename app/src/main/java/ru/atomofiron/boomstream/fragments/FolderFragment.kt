@@ -104,7 +104,7 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "video/*"
         if (intent.resolveActivity(activity.packageManager) != null)
-            activity.startActivityForResult(Intent.createChooser(intent, getString(R.string.pick_video)), I.ACTION_VIDEO_GET)
+            activity.startActivityForResult(Intent.createChooser(intent, getString(R.string.pick_video)), I.ACTION_VIDEO_PICK)
         else
             fab.snack(R.string.no_apps)
     }

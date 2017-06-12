@@ -27,6 +27,10 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop"/>
 
+        <service
+            android:name=".FTPService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

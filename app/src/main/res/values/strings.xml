@@ -95,4 +95,16 @@
     <string name="pick_video">Pick a video</string>
     <string name="record_video">Record a new video</string>
     <string name="nav_item_apikey">Api key</string>
+    <string name="ftp_error_login">FTP login error</string>
+    <string name="medias_name">Media\'s name</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="ftp_login">FTP login</string>
+    <string name="tmp_file_error">Temp file error</string>
+    <string name="ftp_ticket_uploaded">Video uploaded</string>
+    <string name="ftp_ticket_upload_error">Video upload error</string>
+    <string name="ftp_uploaded">%s uploaded</string>
+    <string name="ftp_upload_error">%s upload error</string>
+    <string name="ftp_ticket_uploading">Video uploading</string>
+    <string name="ftp_uploading">Uploading: %s</string>
 </resources>
