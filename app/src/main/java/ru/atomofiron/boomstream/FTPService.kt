@@ -13,6 +13,7 @@ import android.app.NotificationManager
 import android.os.Build
 import android.content.Context
 import android.graphics.drawable.Icon
+import android.app.PendingIntent
 
 
 class FTPService : IntentService("FTPService") {
@@ -24,10 +25,12 @@ class FTPService : IntentService("FTPService") {
     companion object {
         val URI_TO_UPLOAD = "URI_TO_UPLOAD"
         val NAME_TO_UPLOAD = "NAME_TO_UPLOAD"
+        val EXTRA_OLD_NOTIF_ID = "EXTRA_OLD_NOTIF_ID"
     }
 
     override fun onCreate() {
         super.onCreate()
+
 
         notifier = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         ftpClient = FTPClient()
@@ -35,6 +38,7 @@ class FTPService : IntentService("FTPService") {
 
     override fun onDestroy() {
         super.onDestroy()
+        I.Log("ftps: onD")
 
         disconnect()
     }
@@ -83,25 +87,29 @@ class FTPService : IntentService("FTPService") {
         I.Log("onHandleIntent()")
 
         if (ftp())
-            upload(
-                    intent.getParcelableExtra(URI_TO_UPLOAD),
-                    intent.getStringExtra(NAME_TO_UPLOAD)
-            )
+            upload(intent)
     }
 
-    fun upload(uri: Uri, remoteName: String) {
+    fun upload(intent: Intent) {
+
+        val uri: Uri = intent.getParcelableExtra(URI_TO_UPLOAD)
+        val remoteName = intent.getStringExtra(NAME_TO_UPLOAD)
+
         val file = uri.getTempFile(baseContext) ?: return
         val length = file.length()
-        val notifId = (Int.MAX_VALUE * Math.random()).toInt()
         var success = true
+
+        var notifId = (Int.MAX_VALUE * Math.random()).toInt()
+        if (intent.extras.containsKey(EXTRA_OLD_NOTIF_ID))
+            notifId = intent.getIntExtra(EXTRA_OLD_NOTIF_ID, notifId)
 
         val progressTicket = getString(R.string.ftp_ticket_uploading)
         val progressTitle = getString(R.string.ftp_uploading_s, remoteName)
-        showNotif(progressTicket, progressTitle, 0, notifId)
+        showNotif(progressTicket, progressTitle, 0, notifId, null)
 
         try {
             ftpClient.copyStreamListener = CopyStreamWatcher(length, { pr ->
-                showNotif(progressTicket, progressTitle, pr, notifId)
+                showNotif(progressTicket, progressTitle, pr, notifId, null)
             })
 
             if (!ftpClient.appendFile(remoteName, FileInputStream(file)))
@@ -116,9 +124,9 @@ class FTPService : IntentService("FTPService") {
         }
 
         if (success)
-            showNotif(getString(R.string.ftp_ticket_uploaded), getString(R.string.ftp_uploaded_s, remoteName), -1, notifId)
+            showNotif(getString(R.string.ftp_ticket_uploaded), getString(R.string.ftp_uploaded_s, remoteName), -1, notifId, null)
         else
-            showNotif(getString(R.string.ftp_ticket_upload_error), getString(R.string.ftp_upload_error_s, remoteName), -1, notifId)
+            showNotif(getString(R.string.ftp_ticket_upload_error), getString(R.string.ftp_upload_error_s, remoteName), -1, notifId, intent)
     }
 
 
@@ -128,7 +136,7 @@ class FTPService : IntentService("FTPService") {
      *
      * @param progress  прогресс от 0 до 100, -1 - без прогрессбара
      */
-    private fun showNotif(ticker: String, title: String, progress: Int, notifId: Int) {
+    private fun showNotif(ticker: String, title: String, progress: Int, notifId: Int, actionIntent: Intent?) {
         val context = applicationContext
         val builder = Notification.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -143,8 +151,27 @@ class FTPService : IntentService("FTPService") {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             builder.setLargeIcon(Icon.createWithResource(context, R.mipmap.ic_launcher))
 
-        val notif = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            builder.build() else builder.notification
+        val notif: Notification
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (actionIntent != null) {
+                val pIntent = PendingIntent.getService(context, notifId,
+                        actionIntent.putExtra(EXTRA_OLD_NOTIF_ID, notifId),
+                        PendingIntent.FLAG_UPDATE_CURRENT)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    builder.addAction(
+                            Notification.Action.Builder(
+                                    Icon.createWithResource(baseContext, R.drawable.ic_replay),
+                                    getString(R.string.try_upload_again),
+                                    pIntent
+                            ).build()
+                    )
+                else
+                    builder.addAction(R.drawable.ic_replay, getString(R.string.try_upload_again), pIntent)
+            }
+            notif = builder.build()
+        } else
+            notif = builder.notification
 
         if (progress != -1)
             notif.flags = notif.flags or Notification.FLAG_NO_CLEAR

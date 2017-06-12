@@ -108,4 +108,5 @@
     <string name="ftp_uploaded_s">Uploaded: %s</string>
     <string name="ftp_upload_error_s">Upload error: %s</string>
     <string name="ftp_uploading_s">Uploading: %s</string>
+    <string name="try_upload_again">Try to upload again</string>
 </resources>
