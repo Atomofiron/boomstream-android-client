@@ -13,7 +13,7 @@
         android:id="@+id/layout_item"
         android:gravity="center_vertical"
         android:background="?selectableItemBackground"
-        android:layout_margin="@dimen/padding_small">
+        android:padding="@dimen/padding_small">
 
         <ImageView
             android:layout_width="86dp"
