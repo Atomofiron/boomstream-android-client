@@ -17,7 +17,9 @@ import android.graphics.drawable.Icon
 
 class FTPService : IntentService("FTPService") {
 
-    lateinit var notifer: NotificationManager
+    lateinit var notifier: NotificationManager
+    lateinit var ftpClient: FTPClient
+    var loggedIn = false
 
     companion object {
         val URI_TO_UPLOAD = "URI_TO_UPLOAD"
@@ -27,74 +29,96 @@ class FTPService : IntentService("FTPService") {
     override fun onCreate() {
         super.onCreate()
 
-        notifer = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notifier = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        ftpClient = FTPClient()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        disconnect()
+    }
+
+    private fun ftp(): Boolean = (ftpClient.isConnected || connect()) && (loggedIn || login()) && ftpClient.isAvailable
+
+    private fun connect(): Boolean {
+        disconnect()
+
+        try {
+            ftpClient.connect(App.FTP_HOST, App.FTP_PORT)
+            ftpClient.enterRemotePassiveMode()
+            ftpClient.enterLocalPassiveMode()
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
+        } catch (e: Exception) {
+            print(getString(R.string.ftp_error_connect_s, e.message))
+            I.Log("Exception: "+e.toString())
+            return false
+        }
+        return ftpClient.isConnected
+    }
+
+    private fun disconnect() {
+        loggedIn = false
+
+        try {
+            ftpClient.logout()
+            ftpClient.disconnect()
+        } catch (e: Exception) {}
+    }
+
+    private fun login(): Boolean {
+        try {
+            loggedIn = ftpClient.login(App.ftpLogin, App.apikey)
+        } catch (e: Exception) {
+            I.Log("Exception: "+e.toString())
+            print(getString(R.string.ftp_error_login_s, e.message))
+            return false
+        }
+        return loggedIn
+    }
+
+    private fun print(message: String) = baseContext.toast(message)
 
     override fun onHandleIntent(intent: Intent) {
         I.Log("onHandleIntent()")
 
-
-        upload(
-                intent.getParcelableExtra(URI_TO_UPLOAD),
-                intent.getStringExtra(NAME_TO_UPLOAD)
-        )
+        if (ftp())
+            upload(
+                    intent.getParcelableExtra(URI_TO_UPLOAD),
+                    intent.getStringExtra(NAME_TO_UPLOAD)
+            )
     }
 
     fun upload(uri: Uri, remoteName: String) {
         val file = uri.getTempFile(baseContext) ?: return
         val length = file.length()
         val notifId = (Int.MAX_VALUE * Math.random()).toInt()
-        val client = FTPClient()
         var success = true
 
         val progressTicket = getString(R.string.ftp_ticket_uploading)
-        val progressTitle = getString(R.string.ftp_uploading, remoteName)
+        val progressTitle = getString(R.string.ftp_uploading_s, remoteName)
         showNotif(progressTicket, progressTitle, 0, notifId)
 
         try {
-            client.connect(App.FTP_HOST, App.FTP_PORT)
+            ftpClient.copyStreamListener = CopyStreamWatcher(length, { pr ->
+                showNotif(progressTicket, progressTitle, pr, notifId)
+            })
 
-            if (!client.login(App.ftpLogin, App.apikey))
-                throw Exception(getString(R.string.ftp_error_login))
-
-            client.enterRemotePassiveMode()
-            client.enterLocalPassiveMode()
-            client.setFileType(FTP.BINARY_FILE_TYPE)
-            client.copyStreamListener = object : CopyStreamListener {
-                val INTERVAL = 1000
-                var timeStamp = 0L
-
-                override fun bytesTransferred(p0: Long, p1: Int, p2: Long) {
-                    val now = System.currentTimeMillis()
-                    if (now - timeStamp > INTERVAL || p0 == length) {
-                        val progress = Math.ceil(p0.toDouble() / length.toDouble() * 100)
-                        showNotif(progressTicket, progressTitle, progress.toInt(), notifId)
-
-                        timeStamp = now
-                    }
-                }
-                override fun bytesTransferred(p0: CopyStreamEvent?) { /* не вызывается ни разу */ }
-            }
-
-            if (!client.appendFile(remoteName, FileInputStream(file)))
-                throw Exception(getString(R.string.ftp_upload_error, remoteName))
+            if (!ftpClient.appendFile(remoteName, FileInputStream(file)))
+                throw Exception(getString(R.string.ftp_upload_error_s, remoteName))
         } catch (e: Exception) {
             I.Log("FTP: " + e.toString())
 
-            baseContext.toast(e.message ?: e.toString())
+            print(e.message ?: e.toString())
             success = false
         } finally {
             file.delete()
-
-            try {
-                client.disconnect()
-            } catch (e: Exception) {}
         }
 
         if (success)
-            showNotif(getString(R.string.ftp_ticket_uploaded), getString(R.string.ftp_uploaded, remoteName), -1, notifId)
+            showNotif(getString(R.string.ftp_ticket_uploaded), getString(R.string.ftp_uploaded_s, remoteName), -1, notifId)
         else
-            showNotif(getString(R.string.ftp_ticket_upload_error), getString(R.string.ftp_upload_error, remoteName), -1, notifId)
+            showNotif(getString(R.string.ftp_ticket_upload_error), getString(R.string.ftp_upload_error_s, remoteName), -1, notifId)
     }
 
 
@@ -125,6 +149,21 @@ class FTPService : IntentService("FTPService") {
         if (progress != -1)
             notif.flags = notif.flags or Notification.FLAG_NO_CLEAR
 
-        notifer.notify(notifId, notif)
+        notifier.notify(notifId, notif)
+    }
+
+    class CopyStreamWatcher(val length: Long, val listener: (progress: Int) -> Unit) : CopyStreamListener {
+        val MIN_INTERVAL = 1000 // минимум - 1 секунда, максимум - задержка сети
+        var timeStamp = 0L
+
+        override fun bytesTransferred(p0: Long, p1: Int, p2: Long) {
+            val now = System.currentTimeMillis()
+            if (now - timeStamp > MIN_INTERVAL || p0 == length) {
+                listener((Math.ceil(p0.toDouble() / length.toDouble() * 100)).toInt())
+
+                timeStamp = now
+            }
+        }
+        override fun bytesTransferred(p0: CopyStreamEvent?) { /* не вызывается ни разу */ }
     }
 }
