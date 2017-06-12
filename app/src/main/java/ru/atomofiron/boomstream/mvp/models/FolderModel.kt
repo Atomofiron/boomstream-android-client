@@ -35,7 +35,7 @@ object FolderModel {
 
                 publishProgress(list)
                 list.filter { it is Media }
-                        .forEach { loadImageIfNoExists(it as Media) }
+                        .forEach { loadImageIfNotExists(it as Media) }
 
                 return null
             }
@@ -82,16 +82,17 @@ object FolderModel {
         return list
     }
 
-    private fun loadImageIfNoExists(media: Media) {
-        if (!File(App.cachePath + File.separator + media.poster.code + ".tmp").isFile &&
-                !File(App.cachePath + File.separator + media.poster.code).isFile) {
-            val response = App.api.loadData(media.poster.url).execute()
+    private fun loadImageIfNotExists(media: Media) {
+        val poster = media.poster
+        if (poster != null && !File(App.cachePath + File.separator + poster.code + ".tmp").isFile &&
+                !File(App.cachePath + File.separator + poster.code).isFile) {
+            val response = App.api.loadData(poster.url).execute()
             if (response.isSuccessful)
-                loadImage(response.body(), media.poster.code)
+                cacheImage(response.body(), poster.code)
         }
     }
 
-    private fun loadImage(body: ResponseBody?, code: String): Boolean {
+    private fun cacheImage(body: ResponseBody?, code: String): Boolean {
         val path = App.cachePath + File.separator + code
         val file = File(path)
         val tmpFile = File(path + ".tmp")

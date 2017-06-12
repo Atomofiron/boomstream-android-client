@@ -3,10 +3,14 @@ package ru.atomofiron.boomstream.models.retrofit.folder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ru.atomofiron.boomstream.models.Node;
 
@@ -41,13 +45,14 @@ public class Media extends Node {
     private String downloadLink;
     @SerializedName("Poster")
     @Expose
-    private Poster poster;
+    private JsonElement poster;
+    private Poster posterPoster;
     @SerializedName("Transcodes")
     @Expose
     private List<Transcode> transcodes = null;
     @SerializedName("Adaptive")
     @Expose
-    private Adaptive adaptive;
+    private JsonElement adaptive;
     @SerializedName("Screenshots")
     @Expose
     private List<Screenshot> screenshots = null;
@@ -124,12 +129,21 @@ public class Media extends Node {
         this.downloadLink = downloadLink;
     }
 
+    @Nullable
     public Poster getPoster() {
-        return poster;
-    }
+        // poster может оказаться не объектом, а пустым списком,
+        // поэтому придётся хранить их в виде JsonElement, пока бэкендщики это не пофиксят
+        if (poster == null) // ааай костыли
+            return posterPoster;
 
-    public void setPoster(Poster poster) {
-        this.poster = poster;
+        try {
+            posterPoster = new Gson().fromJson(poster, Poster.class);
+            poster = null;
+            return posterPoster;
+        } catch (Exception e) {
+            poster = null;
+            return null;
+        }
     }
 
     @NotNull
@@ -153,12 +167,9 @@ public class Media extends Node {
         this.transcodes = transcodes;
     }
 
+    @Nullable
     public Adaptive getAdaptive() {
-        return adaptive;
-    }
-
-    public void setAdaptive(Adaptive adaptive) {
-        this.adaptive = adaptive;
+        return null; // всё равно пока не нужно
     }
 
     public List<Screenshot> getScreenshots() {
