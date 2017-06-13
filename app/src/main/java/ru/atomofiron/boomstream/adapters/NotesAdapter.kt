@@ -145,7 +145,7 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
 	override fun getItemCount() : Int = getList().size
 
     fun setQuery(query: String) {
-        val notify = search != query.isEmpty()
+        val notify = search == query.isEmpty()
         search = !query.isEmpty()
 
         if (search) {

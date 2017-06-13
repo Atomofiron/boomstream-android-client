@@ -78,7 +78,7 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
         RxTextView.textChanges(etSearch)
                 .map { text -> text.trim() }
-                .filter { text -> isResumed && text.isNotEmpty() }
+                .filter { isResumed }
                 .subscribe { text -> search(text.toString()) }
 
         listAdapter = NotesAdapter(LayoutInflater.from(activity), activity.resources)
@@ -159,7 +159,6 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
     }
 
     fun search(query: String) {
-        etSearch.visibility = if (query.isEmpty()) View.GONE else View.VISIBLE
         listAdapter.setQuery(query)
 
         updateView()
