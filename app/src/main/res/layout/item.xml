@@ -12,11 +12,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/layout_item"
         android:gravity="center_vertical"
-        android:background="?selectableItemBackground"
-        android:padding="@dimen/padding_small">
+        android:background="?selectableItemBackground">
 
         <ImageView
-            android:layout_width="86dp"
+            android:layout_width="@dimen/item_image_width"
             android:layout_height="@dimen/item_image_height"
             android:id="@+id/image"
             android:layout_weight="0"
@@ -28,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_margin="@dimen/padding_middle">
+            android:layout_marginLeft="@dimen/padding_middle">
 
             <TextView
                 android:layout_width="wrap_content"
