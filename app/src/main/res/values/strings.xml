@@ -100,8 +100,10 @@
     <string name="ok">OK</string>
     <string name="tmp_file_error">Temp file error</string>
     <string name="ftp_login">FTP login</string>
-    <string name="ftp_error_connect_s">Connection error: %s</string>
+    <string name="ftp_error_connect_s">FTP connection error: %s</string>
+    <string name="ftp_error_connect">FTP connection error</string>
     <string name="ftp_error_login_s">FTP login error: %s</string>
+    <string name="ftp_error_login">FTP login error</string>
     <string name="ftp_ticket_uploading">Video uploading</string>
     <string name="ftp_ticket_uploaded">Video uploaded</string>
     <string name="ftp_ticket_upload_error">Video upload error</string>
@@ -109,4 +111,5 @@
     <string name="ftp_upload_error_s">Upload error: %s</string>
     <string name="ftp_uploading_s">Uploading: %s</string>
     <string name="try_upload_again">Try to upload again</string>
+    <string name="no_ftp_login">No FTP login</string>
 </resources>

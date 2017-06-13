@@ -14,6 +14,8 @@ import android.os.Build
 import android.content.Context
 import android.graphics.drawable.Icon
 import android.app.PendingIntent
+import android.os.Handler
+import android.os.Looper
 
 
 class FTPService : IntentService("FTPService") {
@@ -58,7 +60,12 @@ class FTPService : IntentService("FTPService") {
             I.Log("Exception: "+e.toString())
             return false
         }
-        return ftpClient.isConnected
+
+        if (!ftpClient.isConnected) {
+            print(getString(R.string.ftp_error_connect))
+            return false
+        } else
+            return true
     }
 
     private fun disconnect() {
@@ -78,10 +85,16 @@ class FTPService : IntentService("FTPService") {
             print(getString(R.string.ftp_error_login_s, e.message))
             return false
         }
+
+        if (!loggedIn)
+            print(getString(R.string.ftp_error_login))
+
         return loggedIn
     }
 
-    private fun print(message: String) = baseContext.toast(message)
+    private fun print(message: String) {
+        Handler(Looper.getMainLooper()).post({ applicationContext.toast(message) })
+    }
 
     override fun onHandleIntent(intent: Intent) {
         I.Log("onHandleIntent()")
