@@ -14,12 +14,9 @@ import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-import ru.atomofiron.boomstream.App
-import ru.atomofiron.boomstream.FTPService
-import ru.atomofiron.boomstream.R
+import ru.atomofiron.boomstream.*
 import ru.atomofiron.boomstream.adapters.NotesAdapter
 import ru.atomofiron.boomstream.models.retrofit.folder.Media
-import ru.atomofiron.boomstream.I
 import ru.atomofiron.boomstream.fragments.FolderFragment
 import ru.atomofiron.boomstream.fragments.MediaFragment
 
@@ -91,20 +88,10 @@ class MainActivity : AppCompatActivity(), NotesAdapter.OnMediaClickListener, Nav
     }
 
     private fun checkFTPLoginAndSendVideo(uri: Uri) {
-        val sp = I.SP(this)
-        val login = sp.getString(I.PREF_FTP_LOGIN, "")
-        if (App.ftpLogin == null && login.isEmpty()) {
-            // по-хорошему ftp login должен указываться в настройках, но их пока нет
-
-            I.showTextRequest(this, R.string.ftp_login, login, { input ->
-                sp.edit().putString(I.PREF_FTP_LOGIN, input).apply()
-                App.ftpLogin = input
-                onSendVideo(uri)
-            })
-        } else {
-            App.ftpLogin = login
+        if (App.ftpLogin.isEmpty())
+            fragment_container.snack(R.string.no_ftp_login)
+        else
             onSendVideo(uri)
-        }
     }
 
     private fun onSendVideo(uri: Uri) {

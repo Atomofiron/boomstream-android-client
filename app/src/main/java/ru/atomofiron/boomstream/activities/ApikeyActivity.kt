@@ -20,9 +20,18 @@ class ApikeyActivity : AppCompatActivity() {
         val sp = I.SP(this)
 
         btnLoad.setOnClickListener {
+            val editor = sp.edit()
+
             val key = etApikey.text.toString()
             App.apikey = key
-            sp.edit().putString(I.PREF_API_KEY, key).apply()
+            editor.putString(I.PREF_API_KEY, key)
+
+            val login = etFtpLogin.text.toString()
+            App.ftpLogin = login
+            editor.putString(I.PREF_FTP_LOGIN, login)
+
+            editor.apply()
+
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
@@ -32,5 +41,6 @@ class ApikeyActivity : AppCompatActivity() {
                 .subscribe { text -> btnLoad.isEnabled = text.length == 32 }
 
         etApikey.setText(sp.getString(I.PREF_API_KEY, ""))
+        etFtpLogin.setText(sp.getString(I.PREF_FTP_LOGIN, ""))
     }
 }

@@ -19,4 +19,5 @@
     <dimen name="text_middle">16sp</dimen>
     <dimen name="text_large">24sp</dimen>
     <dimen name="text_vary_large">32sp</dimen>
+    <dimen name="ftp_login_width">144dp</dimen>
 </resources>

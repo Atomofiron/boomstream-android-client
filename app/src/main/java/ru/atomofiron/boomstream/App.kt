@@ -23,7 +23,7 @@ class App : Application() {
             private set
 
         var apikey: String = ""
-        var ftpLogin: String? = null
+        lateinit var ftpLogin: String
 
         private var videoCache: HttpProxyCacheServer? = null
 

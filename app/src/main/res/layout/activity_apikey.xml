@@ -8,7 +8,7 @@
     android:background="@color/colorPrimary"
     android:orientation="vertical"
     android:gravity="center">
-    
+
     <android.support.v7.widget.AppCompatEditText
         android:layout_width="@dimen/half_width"
         android:layout_height="wrap_content"
@@ -17,6 +17,16 @@
         android:gravity="center"
         android:digits="abcdefghijklmnopqrstuvwxyz0123456789"
         android:maxLength="32"
+        />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:layout_width="@dimen/ftp_login_width"
+        android:layout_height="wrap_content"
+        android:id="@+id/etFtpLogin"
+        android:hint="ftp login"
+        android:gravity="center"
+        android:digits="abcdefghijklmnopqrstuvwxyz0123456789_"
+        android:maxLength="16"
         />
 
     <Button
