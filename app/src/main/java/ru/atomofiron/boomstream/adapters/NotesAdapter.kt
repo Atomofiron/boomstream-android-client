@@ -67,11 +67,15 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
             val poster = node.poster
             if (poster != null) {
                 holder.posterCode = poster.code
-                val dr = drawables[holder.posterCode]
-                if (dr == null)
+                var dr = drawables[holder.posterCode]
+
+                if (dr == null) {
+                    dr = res.getDrawable(R.drawable.ic_time)
+
                     ImageSetter().execute(holder)
-                else
-                    holder.image.setImageDrawable(dr)
+                }
+
+                holder.image.setImageDrawable(dr)
             } else
                 holder.image.setImageResource(R.drawable.ic_broken_image)
 
