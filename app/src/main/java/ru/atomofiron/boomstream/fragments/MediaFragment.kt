@@ -58,11 +58,18 @@ class MediaFragment : Fragment(), OnItemSelectedListener {
         view.media_duration.text = co.getString(R.string.media_duration, media.duration)
         view.media_mediastatus.text = co.getString(R.string.media_mediastatus, media.mediaStatus)
 
+        val videoContainer = view.video_container
+        val videoView = videoContainer.video_view
+
         val metrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(metrics)
-        val params = view.video_container.layoutParams
+        val params = videoContainer.layoutParams
         params.height = metrics.widthPixels * 9 / 16 + 2
-        view.video_container.layoutParams = params
+        videoContainer.layoutParams = params
+
+        val mediaController = MediaController(context)
+        mediaController.setAnchorView(videoView)
+        videoView.setMediaController(mediaController)
 
         view.spinner.adapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, android.R.id.text1, media.transcodesTitles)
         view.spinner.onItemSelectedListener = this
@@ -87,15 +94,7 @@ class MediaFragment : Fragment(), OnItemSelectedListener {
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
             (activity as AppCompatActivity).supportActionBar?.hide()
 
-        video_container.removeAllViews()
-
-        val videoView = VideoView(context)
-        val mediaController = MediaController(context)
-        mediaController.setAnchorView(videoView)
-        videoView.setMediaController(mediaController)
-        videoView.setVideoPath(App.getVideoCache(context).getProxyUrl(url))
-
-        video_container.addView(videoView)
+        video_view.setVideoPath(App.getVideoCache(context).getProxyUrl(url))
     }
 
     override fun onDestroy() {

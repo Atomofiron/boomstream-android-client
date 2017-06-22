@@ -12,8 +12,16 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="240dp"
-            android:id="@+id/video_container"
-            />
+            android:id="@+id/video_container">
+
+            <!-- Контейнер нужен для того, чтобы панель управления в VideoView не смещялась на другие view -->
+
+            <VideoView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/video_view"
+                />
+        </FrameLayout>
         
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
