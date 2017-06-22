@@ -7,11 +7,9 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.widget.EditText
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.PresenterType
-import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.fragment_folder.*
 import ru.atomofiron.boomstream.models.Node
 
@@ -22,7 +20,9 @@ import ru.atomofiron.boomstream.mvp.presenters.FolderPresenter
 import ru.atomofiron.boomstream.mvp.views.FolderView
 import ru.atomofiron.boomstream.snack
 import android.provider.MediaStore
+import android.support.v7.widget.SearchView
 import com.github.clans.fab.FloatingActionMenu
+import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import kotlinx.android.synthetic.main.fragment_folder.view.*
 import ru.atomofiron.boomstream.I
 
@@ -31,6 +31,7 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
     private var c: Int = 0
     private var mainView: View? = null
+    private lateinit var searchItem: MenuItem
 
     companion object {
         const val TAG = "FolderFragment"
@@ -48,7 +49,6 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
         val view = inflater!!.inflate(R.layout.fragment_folder, container, false)
 
-        val etSearch = view.findViewById(R.id.etSearch) as EditText
         val fab = view.findViewById(R.id.fab) as FloatingActionMenu
         val rvNotesList = view.findViewById(R.id.rvNotesList) as RecyclerView
         val swipeLayout = view.findViewById(R.id.swipeLayout) as SwipeRefreshLayout
@@ -75,11 +75,6 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
             requestRecordVideo()
         }
-
-        RxTextView.textChanges(etSearch)
-                .map { text -> text.trim() }
-                .filter { isResumed }
-                .subscribe { text -> search(text.toString()) }
 
         listAdapter = NotesAdapter(LayoutInflater.from(activity), activity.resources)
         listAdapter.onFolderClickListener = this
@@ -127,16 +122,21 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
         super.onResume()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.main, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.folder, menu)
+
+        searchItem = menu.findItem(R.id.search)
+
+        val searchView = searchItem.actionView as SearchView
+        searchView.setOnQueryTextFocusChangeListener { v, hasFocus -> if (!hasFocus) searchItem.collapseActionView() }
+
+        RxSearchView.queryTextChanges(menu.findItem(R.id.search).actionView as SearchView)
+                .map { text -> text.trim() }
+                .filter { isResumed }
+                .subscribe { text -> search(text.toString()) }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == R.id.search) {
-            switchSearch()
-        }
-        return super.onOptionsItemSelected(item)
-    }
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = super.onOptionsItemSelected(item)
 
     override fun onBackPressed(): Boolean {
         return listAdapter.goUp()
@@ -144,14 +144,10 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
     // Custom //
 
-    private fun switchSearch() {
-        showSearch(etSearch.visibility != View.VISIBLE)
-    }
+    private fun collapseSearch() {
+        searchItem.collapseActionView()
 
-    private fun showSearch(show: Boolean) {
-        etSearch.visibility = if (show) View.VISIBLE else View.GONE
-
-        listAdapter.setQuery(if (show) etSearch.text.toString() else "")
+        listAdapter.setQuery("")
     }
 
     fun updateView() {
@@ -198,7 +194,7 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
     override fun onOpenFolder(code: String) {
         listAdapter.openFolder(code)
 
-        showSearch(false)
+        collapseSearch()
     }
 
 }
