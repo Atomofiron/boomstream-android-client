@@ -1,13 +1,9 @@
 package ru.atomofiron.boomstream.models.retrofit
 
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 import ru.atomofiron.boomstream.models.retrofit.folder.Folder
-import ru.atomofiron.boomstream.models.retrofit.media.UploadResult
-
 
 interface Api {
 
