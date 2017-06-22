@@ -70,7 +70,6 @@ class MainActivity : AppCompatActivity(), NotesAdapter.OnMediaClickListener, Nav
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_apikey -> startActivity(Intent(this, ApikeyActivity::class.java))
-            R.id.nav_settings -> {}
             R.id.nav_exit -> finish()
         }
 
