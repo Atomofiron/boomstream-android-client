@@ -72,7 +72,7 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
                 if (dr == null) {
                     dr = res.getDrawable(R.drawable.ic_time)
 
-                    ImageSetter().execute(holder)
+                    ImageSetter(holder).execute()
                 }
 
                 holder.image.setImageDrawable(dr)
@@ -162,8 +162,8 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
             notifyDataSetChanged()
     }
 
-	inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
-		var ll: LinearLayout = itemView!!.layout_item
+	inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+		var ll: LinearLayout = itemView.layout_item
         var image: ImageView = ll.image
         var title: TextView = ll.title
         var resolutions: LinearLayout = ll.resolutions
@@ -180,39 +180,25 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
             }
         }
     }
-    internal inner class ImageSetter : AsyncTask<ViewHolder, Int, ViewHolder>() {
-        lateinit var code: String
-        override fun doInBackground(vararg params: ViewHolder): ViewHolder? {
-            code = params[0].posterCode
-            val path = App.cachePath + File.separator + code
-            val file = File(path)
-            I.Log("ImageSetter: path: "+path)
-            while (true) {
-                if (!file.isFile) {
-                    Thread.sleep(1000)
-                    continue
-                }
+    internal inner class ImageSetter(val holder: ViewHolder) : AsyncTask<Unit, Int, Unit>() {
+        val code = holder.posterCode
 
-                if (file.canRead()) {
-                    I.Log("file.canRead(yes)")
-                    val bitmap = BitmapFactory.decodeFile(path)
-                    drawables.put(code, BitmapDrawable(res, bitmap))
-                    break
-                } else if (!file.canRead()) {
-                    I.Log("file.canRead(no)")
-                    drawables.put(code, res.getDrawable(R.drawable.ic_broken_image))
-                    break
-                }
-            }
-            return params[0]
+        override fun doInBackground(vararg params: Unit?): Unit {
+            val file = File(App.cachePath + File.separator + code)
+
+            // кэширование изображений происходит при загрузке списка,
+            // и наличие файла уже говорит о том, что изображение успешно загружено
+            while (!file.isFile)
+                Thread.sleep(1000)
+
+            drawables.put(code, BitmapDrawable(res, BitmapFactory.decodeFile(file.absolutePath)))
         }
-        override fun onPostExecute(result: ViewHolder) {
+        override fun onPostExecute(result: Unit) {
             super.onPostExecute(result)
 
-            if (code == result.posterCode)
-                result.image.setImageDrawable(drawables[code])
-            else
-                I.Log("viewHolder.code != code")
+            // проверка на тот случай, если наша view item уже не наша
+            if (code == holder.posterCode)
+                holder.image.setImageDrawable(drawables[code])
         }
     }
 
