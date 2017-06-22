@@ -195,6 +195,7 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
         listAdapter.openFolder(code)
 
         collapseSearch()
+        updateView()
     }
 
 }
