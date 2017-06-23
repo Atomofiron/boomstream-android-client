@@ -18,6 +18,7 @@ import android.widget.*
 import ru.atomofiron.boomstream.App
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
+import ru.atomofiron.boomstream.ui.VideoController
 
 class MediaFragment : Fragment(), OnItemSelectedListener {
 
@@ -67,7 +68,7 @@ class MediaFragment : Fragment(), OnItemSelectedListener {
         params.height = metrics.widthPixels * 9 / 16 + 2
         videoContainer.layoutParams = params
 
-        val mediaController = MediaController(context)
+        val mediaController = VideoController(context)
         mediaController.setAnchorView(videoView)
         videoView.setMediaController(mediaController)
 
