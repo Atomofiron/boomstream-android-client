@@ -112,10 +112,9 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
     override fun onStart() {
         super.onStart()
         (activity as MainActivity).onBackPressedListener = this
-        if (presenter != null) // только для отладки
-            presenter.loadNodesIfNecessary()
-        else
-            I.Log("CLEAN PROJECT")
+
+        // если здесь упало, Clean project, Run
+        presenter.loadNodesIfNecessary()
     }
 
     override fun onResume() {
