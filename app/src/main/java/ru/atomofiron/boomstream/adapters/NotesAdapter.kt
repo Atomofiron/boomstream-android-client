@@ -15,6 +15,7 @@ import ru.atomofiron.boomstream.App
 import ru.atomofiron.boomstream.I
 import ru.atomofiron.boomstream.models.Node
 import ru.atomofiron.boomstream.R
+import ru.atomofiron.boomstream.models.retrofit.Api
 import ru.atomofiron.boomstream.models.retrofit.folder.Media
 import ru.atomofiron.boomstream.models.retrofit.folder.Subfolder
 import java.io.File
@@ -70,14 +71,16 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
                 var dr = drawables[holder.posterCode]
 
                 if (dr == null) {
-                    dr = res.getDrawable(R.drawable.ic_time)
+                    dr = res.getDrawable(R.drawable.ic_image)
 
                     ImageSetter(holder).execute()
                 }
 
                 holder.image.setImageDrawable(dr)
-            } else
+            } else if (node.mediaStatus == Api.MEDIA_STATUS_ERROR)
                 holder.image.setImageResource(R.drawable.ic_broken_image)
+            else // постеры видеозаписи готовы не сразу после завершения обработки файла
+                holder.image.setImageResource(R.drawable.ic_time)
 
             holder.resolutions.removeAllViews()
             for (tc in node.transcodes) {

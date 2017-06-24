@@ -10,6 +10,8 @@ interface Api {
     companion object {
         val STATUS_SUCCESS = "Success"
         val STATUS_FAILED = "Failed"
+
+        val MEDIA_STATUS_ERROR = "Error"
     }
 
     @GET("/api/media/folder")
