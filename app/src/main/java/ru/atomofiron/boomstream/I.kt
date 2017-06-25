@@ -54,7 +54,7 @@ class I {
  */
 fun Uri.getTempFile(co: Context): File? {
     val input = co.contentResolver.openInputStream(this)
-    val tmpPath = co.externalCacheDir.absolutePath + File.separator + System.currentTimeMillis()
+    val tmpPath = (co.externalCacheDir?.absolutePath ?: co.cacheDir.absolutePath) + File.separator + System.currentTimeMillis()
     var length: Long
 
     try {
