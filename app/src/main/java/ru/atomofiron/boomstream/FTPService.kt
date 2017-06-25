@@ -16,6 +16,7 @@ import android.graphics.drawable.Icon
 import android.app.PendingIntent
 import android.os.Handler
 import android.os.Looper
+import java.net.URLEncoder
 
 
 class FTPService : IntentService("FTPService") {
@@ -125,7 +126,8 @@ class FTPService : IntentService("FTPService") {
                 showNotif(progressTicket, progressTitle, pr, notifId, null)
             })
 
-            if (!ftpClient.appendFile(remoteName, FileInputStream(file)))
+            // URLEncoder нужен, потому что ftp клиент от apache некорректно передаёт кириллицу
+            if (!ftpClient.appendFile(URLEncoder.encode(remoteName, "UTF-8"), FileInputStream(file)))
                 throw Exception(getString(R.string.ftp_upload_error_s, remoteName))
         } catch (e: Exception) {
             I.Log("FTP: " + e.toString())
