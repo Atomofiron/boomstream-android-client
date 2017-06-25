@@ -57,8 +57,10 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
             holder.resolutions.visibility = View.GONE
 
             holder.title.text = node.title
+            holder.image.scaleType = ImageView.ScaleType.FIT_CENTER
+
             holder.image.setImageDrawable(res.getDrawable(
-                    if (node.fileCount == "0") R.drawable.ic_folder_empty else R.drawable.ic_folder))
+                    if (node.fileCount == "0") R.drawable.ic_item_folder_empty else R.drawable.ic_item_folder))
             holder.posterCode = ""
         } else if (node is Media) {
             holder.resolutions.visibility = View.VISIBLE
@@ -71,16 +73,23 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
                 var dr = drawables[holder.posterCode]
 
                 if (dr == null) {
-                    dr = res.getDrawable(R.drawable.ic_image)
+                    dr = res.getDrawable(R.drawable.ic_item_image)
 
                     ImageSetter(holder).execute()
-                }
+
+                    holder.image.scaleType = ImageView.ScaleType.FIT_CENTER
+                } else
+                    holder.image.scaleType = ImageView.ScaleType.CENTER_CROP
 
                 holder.image.setImageDrawable(dr)
-            } else if (node.mediaStatus == Api.MEDIA_STATUS_ERROR)
-                holder.image.setImageResource(R.drawable.ic_broken_image)
-            else // постеры видеозаписи готовы не сразу после завершения обработки файла
-                holder.image.setImageResource(R.drawable.ic_time)
+            } else {
+                if (node.mediaStatus == Api.MEDIA_STATUS_ERROR)
+                    holder.image.setImageResource(R.drawable.ic_item_broken_image)
+                else // постеры видеозаписи готовы не сразу после завершения обработки файла
+                    holder.image.setImageResource(R.drawable.ic_item_time)
+
+                holder.image.scaleType = ImageView.ScaleType.FIT_CENTER
+            }
 
             holder.resolutions.removeAllViews()
             for (tc in node.transcodes) {
@@ -200,8 +209,10 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
             super.onPostExecute(result)
 
             // проверка на тот случай, если наша view item уже не наша
-            if (code == holder.posterCode)
+            if (code == holder.posterCode) {
                 holder.image.setImageDrawable(drawables[code])
+                holder.image.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
         }
     }
 

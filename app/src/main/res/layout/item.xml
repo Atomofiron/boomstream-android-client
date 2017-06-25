@@ -19,7 +19,7 @@
             android:layout_height="@dimen/item_image_height"
             android:id="@+id/image"
             android:layout_weight="0"
-            android:scaleType="fitCenter"
+            android:background="@color/colorGrey"
             />
 
         <LinearLayout
