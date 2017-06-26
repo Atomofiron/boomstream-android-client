@@ -12,10 +12,11 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.os.Build
 import android.content.Context
-import android.graphics.drawable.Icon
 import android.app.PendingIntent
 import android.os.Handler
 import android.os.Looper
+import android.graphics.BitmapFactory
+import android.support.v4.app.NotificationCompat
 import java.net.URLEncoder
 
 
@@ -154,20 +155,27 @@ class FTPService : IntentService("FTPService") {
      */
     private fun showNotif(ticker: String, title: String, progress: Int, notifId: Int, actionIntent: Intent?) {
         val context = applicationContext
-        val builder = Notification.Builder(context)
+        val builder = NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_small)
                 .setTicker(ticker)
                 .setContentTitle(title)
                 .setAutoCancel(true)
 
         // намерение для повторной отправки
-        var pendingIntent: PendingIntent? = null
         if (actionIntent != null) {
-            pendingIntent = PendingIntent.getService(context, notifId,
+            val pendingIntent = PendingIntent.getService(context, notifId,
                     actionIntent.putExtra(EXTRA_OLD_NOTIF_ID, notifId),
                     PendingIntent.FLAG_UPDATE_CURRENT)
 
             builder.setContentIntent(pendingIntent)
+            builder.addAction(
+                    // при Build.VERSION.SDK_INT < 23 нет возможности отобразить векторное изображение
+                    NotificationCompat.Action.Builder(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                            R.drawable.ic_replay else R.drawable.ic_replay_img,
+                            getString(R.string.try_upload_again),
+                            pendingIntent
+                    ).build()
+            )
         }
 
         val progress = Math.max(Math.min(progress, 100), -1) // защита типа
@@ -175,25 +183,9 @@ class FTPService : IntentService("FTPService") {
             builder.setProgress(100, Math.min(progress, 100), progress % 100 == 0)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            builder.setLargeIcon(Icon.createWithResource(context, R.mipmap.ic_launcher))
+            builder.setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher))
 
-        val notif: Notification
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (pendingIntent != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                    builder.addAction(
-                            Notification.Action.Builder(
-                                    Icon.createWithResource(baseContext, R.drawable.ic_replay),
-                                    getString(R.string.try_upload_again),
-                                    pendingIntent
-                            ).build()
-                    )
-                else
-                    builder.addAction(R.drawable.ic_replay, getString(R.string.try_upload_again), pendingIntent)
-            }
-            notif = builder.build()
-        } else
-            notif = builder.notification
+        val notif = builder.build()
 
         if (progress != -1)
             notif.flags = notif.flags or Notification.FLAG_NO_CLEAR
