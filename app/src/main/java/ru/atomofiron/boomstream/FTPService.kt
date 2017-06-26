@@ -154,7 +154,7 @@ class FTPService : IntentService("FTPService") {
     private fun showNotif(ticker: String, title: String, progress: Int, notifId: Int, actionIntent: Intent?) {
         val context = applicationContext
         val builder = Notification.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_small)
                 .setTicker(ticker)
                 .setContentTitle(title)
                 .setAutoCancel(true)
