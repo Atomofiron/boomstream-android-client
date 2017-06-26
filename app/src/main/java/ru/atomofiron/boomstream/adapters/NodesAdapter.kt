@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.*
 import kotlinx.android.synthetic.main.item.view.*
 import ru.atomofiron.boomstream.App
-import ru.atomofiron.boomstream.I
 import ru.atomofiron.boomstream.models.Node
 import ru.atomofiron.boomstream.R
 import ru.atomofiron.boomstream.models.retrofit.Api
@@ -23,7 +22,7 @@ import java.util.HashMap
 
 import kotlin.collections.ArrayList
 
-class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
+class NodesAdapter() : RecyclerView.Adapter<NodesAdapter.ViewHolder>() {
 
     private lateinit var inflater: LayoutInflater
     private lateinit var res: Resources
@@ -50,7 +49,7 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         this.recyclerView = recyclerView ?: this.recyclerView
     }
 
-    override fun onBindViewHolder(holder: NotesAdapter.ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: NodesAdapter.ViewHolder?, position: Int) {
         val node = get(holder!!.adapterPosition)
 
         if (node is Subfolder) {
@@ -83,10 +82,9 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
 
                 holder.image.setImageDrawable(dr)
             } else {
-                if (node.mediaStatus == Api.MEDIA_STATUS_ERROR)
-                    holder.image.setImageResource(R.drawable.ic_item_broken_image)
-                else // постеры видеозаписи готовы не сразу после завершения обработки файла
-                    holder.image.setImageResource(R.drawable.ic_item_time)
+                // постеры видеозаписи готовы не сразу после завершения обработки файла
+                holder.image.setImageResource(if (node.mediaStatus == Api.MEDIA_STATUS_ERROR)
+                    R.drawable.ic_item_broken_image else R.drawable.ic_item_time)
 
                 holder.image.scaleType = ImageView.ScaleType.FIT_CENTER
             }
@@ -110,18 +108,6 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
     fun clearData() {
         curDir = ""
         nodes.clear()
-        updateDirNodes()
-        notifyDataSetChanged()
-    }
-
-    fun add(node: Node) {
-        nodes.add(node)
-        updateDirNodes()
-        notifyDataSetChanged()
-    }
-
-    fun remove(position: Int) {
-        nodes.removeAt(position)
         updateDirNodes()
         notifyDataSetChanged()
     }
@@ -155,7 +141,7 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
 
     fun get(n: Int) : Node = getList()[n]
 
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : NotesAdapter.ViewHolder =
+	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : NodesAdapter.ViewHolder =
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false))
 
 	override fun getItemCount() : Int = getList().size
@@ -182,7 +168,6 @@ class NotesAdapter() : RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         var posterCode: String = ""
         init {
             ll.setOnClickListener {
-                I.Log("kek")
                 val position = recyclerView.getChildAdapterPosition(ll.parent as View)
                 val node = getList()[position]
                 if (node is Subfolder)

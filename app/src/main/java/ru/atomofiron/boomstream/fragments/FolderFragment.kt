@@ -3,7 +3,6 @@ package ru.atomofiron.boomstream.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -15,21 +14,19 @@ import ru.atomofiron.boomstream.models.Node
 
 import ru.atomofiron.boomstream.R
 import ru.atomofiron.boomstream.activities.MainActivity
-import ru.atomofiron.boomstream.adapters.NotesAdapter
+import ru.atomofiron.boomstream.adapters.NodesAdapter
 import ru.atomofiron.boomstream.mvp.presenters.FolderPresenter
 import ru.atomofiron.boomstream.mvp.views.FolderView
 import ru.atomofiron.boomstream.snack
 import android.provider.MediaStore
 import android.support.v7.widget.SearchView
-import com.github.clans.fab.FloatingActionMenu
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
 import kotlinx.android.synthetic.main.fragment_folder.view.*
 import ru.atomofiron.boomstream.I
 
 
-class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPressedListener, NotesAdapter.OnFolderClickListener {
+class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPressedListener, NodesAdapter.OnFolderClickListener {
 
-    private var c: Int = 0
     private var mainView: View? = null
     private lateinit var searchItem: MenuItem
 
@@ -40,7 +37,7 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
     @InjectPresenter(type=PresenterType.GLOBAL)
     lateinit var presenter: FolderPresenter
-    private lateinit var listAdapter: NotesAdapter
+    private lateinit var listAdapter: NodesAdapter
 
     // Native //
 
@@ -49,13 +46,11 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
         val view = inflater!!.inflate(R.layout.fragment_folder, container, false)
 
-        val fab = view.findViewById(R.id.fab) as FloatingActionMenu
-        val rvNotesList = view.findViewById(R.id.rvNotesList) as RecyclerView
-        val swipeLayout = view.findViewById(R.id.swipeLayout) as SwipeRefreshLayout
-        swipeLayout.setOnRefreshListener {
+        view.swipeLayout.setOnRefreshListener {
             presenter.onReloadNodes()
         }
 
+        val fab = view.fab
         // у com.github.clans.fab.FloatingActionButton нет возможности указать цвет в xml
         fab.menu_item_pick.setColorNormalResId(R.color.colorAccent)
         fab.menu_item_pick.setColorPressedResId(R.color.colorAccent)
@@ -76,10 +71,11 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
             requestRecordVideo()
         }
 
-        listAdapter = NotesAdapter(LayoutInflater.from(activity), activity.resources)
+        listAdapter = NodesAdapter(LayoutInflater.from(activity), activity.resources)
         listAdapter.onFolderClickListener = this
         listAdapter.onMediaClickListener = activity as MainActivity
 
+        val rvNotesList = view.rvNotesList
         rvNotesList.layoutManager = LinearLayoutManager(activity) as RecyclerView.LayoutManager
         rvNotesList.adapter = listAdapter
 
@@ -117,10 +113,6 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
         presenter.loadNodesIfNecessary()
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.folder, menu)
 
@@ -137,9 +129,7 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = super.onOptionsItemSelected(item)
 
-    override fun onBackPressed(): Boolean {
-        return listAdapter.goUp()
-    }
+    override fun onBackPressed(): Boolean = listAdapter.goUp()
 
     // Custom //
 

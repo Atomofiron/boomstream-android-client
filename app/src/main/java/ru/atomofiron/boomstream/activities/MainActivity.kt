@@ -15,13 +15,13 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import ru.atomofiron.boomstream.*
-import ru.atomofiron.boomstream.adapters.NotesAdapter
+import ru.atomofiron.boomstream.adapters.NodesAdapter
 import ru.atomofiron.boomstream.models.retrofit.folder.Media
 import ru.atomofiron.boomstream.fragments.FolderFragment
 import ru.atomofiron.boomstream.fragments.MediaFragment
 
 
-class MainActivity : AppCompatActivity(), NotesAdapter.OnMediaClickListener, NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NodesAdapter.OnMediaClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     var onBackPressedListener: OnBackPressedListener? = null
 
