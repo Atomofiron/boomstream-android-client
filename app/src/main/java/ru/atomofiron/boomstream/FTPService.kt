@@ -150,6 +150,7 @@ class FTPService : IntentService("FTPService") {
      * Создаёт или обновляет уведомление в шторке.
      *
      * @param progress  прогресс от 0 до 100, -1 - без прогрессбара
+     * @param actionIntent  намерение, с помощью которого была инициирована отправка файла (actionIntent != null только когда отправка не удалась)
      */
     private fun showNotif(ticker: String, title: String, progress: Int, notifId: Int, actionIntent: Intent?) {
         val context = applicationContext
@@ -158,6 +159,16 @@ class FTPService : IntentService("FTPService") {
                 .setTicker(ticker)
                 .setContentTitle(title)
                 .setAutoCancel(true)
+
+        // намерение для повторной отправки
+        var pendingIntent: PendingIntent? = null
+        if (actionIntent != null) {
+            pendingIntent = PendingIntent.getService(context, notifId,
+                    actionIntent.putExtra(EXTRA_OLD_NOTIF_ID, notifId),
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+
+            builder.setContentIntent(pendingIntent)
+        }
 
         val progress = Math.max(Math.min(progress, 100), -1) // защита типа
         if (progress != -1)
@@ -168,21 +179,17 @@ class FTPService : IntentService("FTPService") {
 
         val notif: Notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (actionIntent != null) {
-                val pIntent = PendingIntent.getService(context, notifId,
-                        actionIntent.putExtra(EXTRA_OLD_NOTIF_ID, notifId),
-                        PendingIntent.FLAG_UPDATE_CURRENT)
-
+            if (pendingIntent != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                     builder.addAction(
                             Notification.Action.Builder(
                                     Icon.createWithResource(baseContext, R.drawable.ic_replay),
                                     getString(R.string.try_upload_again),
-                                    pIntent
+                                    pendingIntent
                             ).build()
                     )
                 else
-                    builder.addAction(R.drawable.ic_replay, getString(R.string.try_upload_again), pIntent)
+                    builder.addAction(R.drawable.ic_replay, getString(R.string.try_upload_again), pendingIntent)
             }
             notif = builder.build()
         } else
