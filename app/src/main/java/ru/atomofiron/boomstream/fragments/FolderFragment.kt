@@ -78,6 +78,10 @@ class FolderFragment : MvpAppCompatFragment(), FolderView, MainActivity.OnBackPr
         val rvNotesList = view.rvNotesList
         rvNotesList.layoutManager = LinearLayoutManager(activity) as RecyclerView.LayoutManager
         rvNotesList.adapter = listAdapter
+        rvNotesList.setOnTouchListener { _, _ ->
+            fab.close(true)
+            return@setOnTouchListener false
+        }
 
         mainView = view
         return view
