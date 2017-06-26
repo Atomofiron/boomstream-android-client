@@ -29,7 +29,7 @@ class FTPService : IntentService("FTPService") {
     companion object {
         val URI_TO_UPLOAD = "URI_TO_UPLOAD"
         val NAME_TO_UPLOAD = "NAME_TO_UPLOAD"
-        val EXTRA_OLD_NOTIF_ID = "EXTRA_OLD_NOTIF_ID"
+        private val EXTRA_NOTIF_ID = "EXTRA_NOTIF_ID"
     }
 
     override fun onCreate() {
@@ -101,22 +101,30 @@ class FTPService : IntentService("FTPService") {
     override fun onHandleIntent(intent: Intent) {
         I.Log("onHandleIntent()")
 
+        if (!intent.extras.containsKey(EXTRA_NOTIF_ID))
+            intent.putExtra(EXTRA_NOTIF_ID, (Int.MAX_VALUE * Math.random()).toInt())
+
         if (ftp())
             upload(intent)
+        else
+            showNotif(
+                    getString(R.string.ftp_ticket_upload_error),
+                    getString(R.string.ftp_upload_error_s, intent.getStringExtra(NAME_TO_UPLOAD)),
+                    -1,
+                    intent.getIntExtra(EXTRA_NOTIF_ID, 0),
+                    intent
+            )
     }
 
     fun upload(intent: Intent) {
 
         val uri: Uri = intent.getParcelableExtra(URI_TO_UPLOAD)
         val remoteName = intent.getStringExtra(NAME_TO_UPLOAD)
+        val notifId = intent.getIntExtra(EXTRA_NOTIF_ID, 0)
 
         val file = uri.getTempFile(baseContext) ?: return
         val length = file.length()
         var success = true
-
-        var notifId = (Int.MAX_VALUE * Math.random()).toInt()
-        if (intent.extras.containsKey(EXTRA_OLD_NOTIF_ID))
-            notifId = intent.getIntExtra(EXTRA_OLD_NOTIF_ID, notifId)
 
         val progressTicket = getString(R.string.ftp_ticket_uploading)
         val progressTitle = getString(R.string.ftp_uploading_s, remoteName)
@@ -163,9 +171,7 @@ class FTPService : IntentService("FTPService") {
 
         // намерение для повторной отправки
         if (actionIntent != null) {
-            val pendingIntent = PendingIntent.getService(context, notifId,
-                    actionIntent.putExtra(EXTRA_OLD_NOTIF_ID, notifId),
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent = PendingIntent.getService(context, notifId, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
             builder.setContentIntent(pendingIntent)
             builder.addAction(
