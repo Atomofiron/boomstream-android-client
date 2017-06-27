@@ -173,12 +173,13 @@ class FTPService : IntentService("FTPService") {
         if (actionIntent != null) {
             val pendingIntent = PendingIntent.getService(context, notifId, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
+            builder.setContentText(getString(R.string.tap_to_try_again))
             builder.setContentIntent(pendingIntent)
             builder.addAction(
                     // при Build.VERSION.SDK_INT < 23 нет возможности отобразить векторное изображение
                     NotificationCompat.Action.Builder(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                             R.drawable.ic_replay else R.drawable.ic_replay_img,
-                            getString(R.string.try_upload_again),
+                            getString(R.string.try_again),
                             pendingIntent
                     ).build()
             )
